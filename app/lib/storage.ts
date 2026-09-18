@@ -1,4 +1,4 @@
-import { get, set, del, keys } from 'idb-keyval';
+import { get, set, del, keys, createStore, clear, type UseStore } from 'idb-keyval';
 import type { Dataset } from '../types/dataset';
 import type { QueryHistoryItem, SavedQuery } from '../types/query';
 import { DEFAULT_SETTINGS, type AppSettings } from '../types/settings';
@@ -10,6 +10,26 @@ const STORAGE_KEYS = {
   ACTIVE_DATASET_ID: 'json_vis_active_dataset_id',
   DATASET_INDEX: 'json_vis_dataset_index', // Array of dataset IDs in order
   IDB_PREFIX: 'dataset_',
+  IDB_DB_NAME: 'JsonVisualiserStudioDb',
+  IDB_STORE_NAME: 'JsonVisualiserStudio',
+};
+
+let studioStoreInstance: UseStore | undefined;
+
+export function getStudioStore(): UseStore | undefined {
+  if (typeof window === 'undefined') return undefined;
+  if (!studioStoreInstance) {
+    studioStoreInstance = createStore(STORAGE_KEYS.IDB_DB_NAME, STORAGE_KEYS.IDB_STORE_NAME);
+  }
+  return studioStoreInstance;
+}
+
+export const studioStore: UseStore = (txMode, callback) => {
+  const store = getStudioStore();
+  if (!store) {
+    return Promise.reject(new Error('IndexedDB store is only available in browser environment'));
+  }
+  return store(txMode, callback);
 };
 
 /**
@@ -93,11 +113,19 @@ export async function loadDatasetsFromStorage(): Promise<{ datasets: Dataset[]; 
     const activeId = localStorage.getItem(STORAGE_KEYS.ACTIVE_DATASET_ID);
     const indexRaw = localStorage.getItem(STORAGE_KEYS.DATASET_INDEX);
     const datasetIds: string[] = indexRaw ? JSON.parse(indexRaw) : [];
+    const store = getStudioStore();
 
     const loadedDatasets: Dataset[] = [];
     for (const id of datasetIds) {
       try {
-        const ds = await get<Dataset>(`${STORAGE_KEYS.IDB_PREFIX}${id}`);
+        let ds = await get<Dataset>(`${STORAGE_KEYS.IDB_PREFIX}${id}`, store);
+        // Fallback / migration from default store if needed
+        if (!ds) {
+          ds = await get<Dataset>(`${STORAGE_KEYS.IDB_PREFIX}${id}`);
+          if (ds && store) {
+            await set(`${STORAGE_KEYS.IDB_PREFIX}${id}`, ds, store);
+          }
+        }
         if (ds) {
           loadedDatasets.push(ds);
         }
@@ -119,8 +147,9 @@ export async function loadDatasetsFromStorage(): Promise<{ datasets: Dataset[]; 
 export async function saveDatasetToStorage(dataset: Dataset): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
-    // Save dataset object in IndexedDB
-    await set(`${STORAGE_KEYS.IDB_PREFIX}${dataset.id}`, dataset);
+    // Save dataset object in custom IndexedDB store
+    const store = getStudioStore();
+    await set(`${STORAGE_KEYS.IDB_PREFIX}${dataset.id}`, dataset, store);
 
     // Update index in localStorage
     const indexRaw = localStorage.getItem(STORAGE_KEYS.DATASET_INDEX);
@@ -137,7 +166,12 @@ export async function saveDatasetToStorage(dataset: Dataset): Promise<void> {
 export async function deleteDatasetFromStorage(datasetId: string): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
-    await del(`${STORAGE_KEYS.IDB_PREFIX}${datasetId}`);
+    const store = getStudioStore();
+    await del(`${STORAGE_KEYS.IDB_PREFIX}${datasetId}`, store);
+    // Also cleanup legacy store if present
+    try {
+      await del(`${STORAGE_KEYS.IDB_PREFIX}${datasetId}`);
+    } catch (_) {}
 
     const indexRaw = localStorage.getItem(STORAGE_KEYS.DATASET_INDEX);
     const datasetIds: string[] = indexRaw ? JSON.parse(indexRaw) : [];
@@ -208,7 +242,17 @@ export async function clearAllLocalData(): Promise<void> {
     }
   }
 
-  // Clear IndexedDB keys
+  // Clear custom IndexedDB store
+  try {
+    const store = getStudioStore();
+    if (store) {
+      await clear(store);
+    }
+  } catch (err) {
+    console.warn('Failed to clear custom IndexedDB store', err);
+  }
+
+  // Clear legacy default IndexedDB keys
   try {
     const allKeys = await keys();
     for (const key of allKeys) {
@@ -217,6 +261,6 @@ export async function clearAllLocalData(): Promise<void> {
       }
     }
   } catch (err) {
-    console.warn('Failed to clear IndexedDB completely', err);
+    console.warn('Failed to clear legacy IndexedDB completely', err);
   }
 }
