@@ -35,8 +35,10 @@ interface WorkspaceContextType {
   updateSavedQuery: (query: SavedQuery) => void;
   deleteSavedQuery: (id: string) => void;
   duplicateSavedQuery: (query: SavedQuery) => void;
+  clearSavedQueries: () => void;
   settings: AppSettings;
   updateSettings: (newSettings: AppSettings) => void;
+  resetSettings: () => void;
   clearAllData: () => Promise<void>;
   isInitialized: boolean;
 }
@@ -173,9 +175,19 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     saveSavedQueries(updated);
   };
 
+  const clearSavedQueries = () => {
+    setSavedQueries([]);
+    saveSavedQueries([]);
+  };
+
   const updateSettings = (newSettings: AppSettings) => {
     setSettings(newSettings);
     saveSettings(newSettings);
+  };
+
+  const resetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+    saveSettings(DEFAULT_SETTINGS);
   };
 
   const clearAllData = async () => {
@@ -208,8 +220,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         updateSavedQuery,
         deleteSavedQuery,
         duplicateSavedQuery,
+        clearSavedQueries,
         settings,
         updateSettings,
+        resetSettings,
         clearAllData,
         isInitialized,
       }}
