@@ -69,9 +69,9 @@ export function validateJsonString(raw: string): { isValid: boolean; error?: Par
   }
 }
 
-export function formatJson(raw: string): string {
+export function formatJson(raw: string, space: number = 2): string {
   const parsed = JSON.parse(raw);
-  return JSON.stringify(parsed, null, 2);
+  return JSON.stringify(parsed, null, space);
 }
 
 export function minifyJson(raw: string): string {

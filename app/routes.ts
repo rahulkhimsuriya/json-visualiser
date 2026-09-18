@@ -2,6 +2,7 @@ import { type RouteConfig, index, route, layout, prefix } from "@react-router/de
 
 export default [
   index("routes/landing.tsx"),
+  route("formatter", "routes/formatter.tsx"),
   route("import", "routes/import.tsx"),
   ...prefix("workspace", [
     layout("routes/workspace-layout.tsx", [

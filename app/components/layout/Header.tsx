@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import {
   FileJson,
-  ShieldCheck,
   Settings,
   Sun,
   Moon,
   Keyboard,
   Plus,
   Database,
-  Table
+  Table,
+  Sparkles
 } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
-import { PrivacyModal } from './PrivacyModal';
 import { ShortcutsModal } from './ShortcutsModal';
 
 export const Header: React.FC = () => {
@@ -26,7 +25,6 @@ export const Header: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   const toggleTheme = () => {
@@ -69,6 +67,18 @@ export const Header: React.FC = () => {
               </Link>
 
               <Link
+                to="/formatter"
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  location.pathname === '/formatter' || location.pathname === '/format'
+                    ? 'bg-slate-100 dark:bg-slate-800/90 text-emerald-600 dark:text-emerald-400 shadow-2xs font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/60 dark:hover:bg-slate-800/50'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Formatter</span>
+              </Link>
+
+              <Link
                 to="/import"
                 className={`px-3 py-1.5 rounded-xl transition-all ${
                   location.pathname === '/import'
@@ -93,16 +103,6 @@ export const Header: React.FC = () => {
                 </Link>
               )}
             </nav>
-
-            {/* Privacy Badge */}
-            <button
-              onClick={() => setIsPrivacyOpen(true)}
-              title="Click to view client-side privacy guarantee"
-              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/60 transition-all cursor-pointer shadow-2xs"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>100% Client-Side</span>
-            </button>
           </div>
 
           {/* Dataset Selector Dropdown (When at least 1 dataset exists) */}
@@ -203,11 +203,6 @@ export const Header: React.FC = () => {
       </header>
 
       {/* Modals */}
-      <PrivacyModal
-        isOpen={isPrivacyOpen}
-        onClose={() => setIsPrivacyOpen(false)}
-      />
-
       <ShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
