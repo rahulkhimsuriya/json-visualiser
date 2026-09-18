@@ -26,6 +26,11 @@ Most JSON viewers only display raw trees or format strings. **JSON Visualiser** 
 
 ## ✨ Features
 
+- **🪄 JSON Formatter & Minifier**:
+  - Prettify JSON with configurable indentation (2 or 4 spaces) or minify for compact payloads.
+  - Real-time JSON validation with precise syntax error diagnostics, line/column markers, and error snippets.
+  - One-click conversion from formatted JSON directly into an interactive workspace table.
+  - Quick copy to clipboard and `.json` file download.
 - **📥 Flexible JSON Ingestion**:
   - Paste raw JSON with automatic formatting and syntax validation.
   - File upload via click or drag-and-drop (`.json` files).
@@ -79,6 +84,7 @@ Most JSON viewers only display raw trees or format strings. **JSON Visualiser** 
 | Route | Description |
 | :--- | :--- |
 | `/` | **Landing Page**: Feature overview, workflow summary, and quick-start dataset loaders. |
+| `/formatter` | **JSON Formatter & Minifier**: Prettify (2/4 spaces), minify, real-time syntax validation with line/column error diagnostics, and load directly into the workspace. |
 | `/import` | **JSON Input**: Textarea paste, drag-and-drop dropzone, format checker, and sample data picker. |
 | `/workspace` | **Workspace Overview**: High-level dataset metrics, schema summary, and quick action cards. |
 | `/workspace/data` | **Data Explorer**: Full-page virtualized data table with search, sorting, and column filters. |
