@@ -222,9 +222,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                 }}
                 onMouseEnter={() => setSelectedIndex(idx)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-colors cursor-pointer ${
+                className={`w-full px-3.5 py-2.5 rounded-xl flex items-center justify-between text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -232,13 +232,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   <span
                     className={`p-1.5 rounded-lg ${
                       isSelected
-                        ? 'bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                        ? 'bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </span>
-                  <span className="text-sm font-medium">{cmd.label}</span>
+                  <span className="text-xs sm:text-sm font-semibold">
+                    {cmd.label}
+                  </span>
                 </div>
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
                   {cmd.category}

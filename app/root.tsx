@@ -30,14 +30,32 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var settings = JSON.parse(localStorage.getItem('json_vis_settings') || '{}');
+                  var theme = settings.theme || 'system';
+                  var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+      <body className="min-h-screen flex flex-col bg-slate-50/60 dark:bg-[#080b12] text-slate-900 dark:text-slate-100 ambient-glow antialiased selection:bg-emerald-500/20 selection:text-emerald-700 dark:selection:text-emerald-300 transition-colors duration-200">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -112,7 +130,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <p className="text-sm text-slate-500 dark:text-slate-400">{details}</p>
       <a
         href="/"
-        className="inline-block px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+        className="inline-block px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors cursor-pointer"
       >
         Return Home
       </a>

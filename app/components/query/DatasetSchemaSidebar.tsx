@@ -31,14 +31,14 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
       case 'boolean':
         return <ToggleLeft className="w-3 h-3 text-purple-500" />;
       default:
-        return <Type className="w-3 h-3 text-indigo-500" />;
+        return <Type className="w-3 h-3 text-emerald-500" />;
     }
   };
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col h-full">
       <div className="flex items-center gap-2 pb-3 mb-2 border-b border-slate-200 dark:border-slate-800">
-        <Database className="w-4 h-4 text-indigo-500" />
+        <Database className="w-4 h-4 text-emerald-500" />
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
           Available Tables & Columns
         </h3>
@@ -60,7 +60,7 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
               ) : (
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
               )}
-              <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 data
               </span>
               <span className="text-[10px] text-slate-400">(current dataset)</span>
@@ -70,7 +70,7 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
                 e.stopPropagation();
                 onInsertText('data');
               }}
-              className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
               title="Insert 'data' table"
             >
               <Plus className="w-3 h-3" />
@@ -83,13 +83,13 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
                 <button
                   key={col.key}
                   onClick={() => onInsertText(col.key.includes('.') ? `[${col.key}]` : col.key)}
-                  className="w-full text-left px-2 py-1 rounded flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors group cursor-pointer"
+                  className="w-full text-left px-2 py-1 rounded flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors group cursor-pointer"
                 >
                   <div className="flex items-center gap-1.5 truncate">
                     {renderTypeIcon(col.type)}
                     <span className="font-mono text-[11px] truncate">{col.key}</span>
                   </div>
-                  <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-indigo-500" />
+                  <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-500" />
                 </button>
               ))}
             </div>
@@ -122,7 +122,7 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
                   e.stopPropagation();
                   onInsertText(ds.tableName);
                 }}
-                className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 title={`Insert '${ds.tableName}'`}
               >
                 <Plus className="w-3 h-3" />
@@ -137,14 +137,14 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
                     <button
                       key={col.key}
                       onClick={() => onInsertText(qualifiedCol)}
-                      className="w-full text-left px-2 py-1 rounded flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors group cursor-pointer"
+                      className="w-full text-left px-2 py-1 rounded flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors group cursor-pointer"
                       title={`Insert ${qualifiedCol}`}
                     >
                       <div className="flex items-center gap-1.5 truncate">
                         {renderTypeIcon(col.type)}
                         <span className="font-mono text-[11px] truncate">{col.key}</span>
                       </div>
-                      <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-indigo-500" />
+                      <Plus className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-500" />
                     </button>
                   );
                 })}

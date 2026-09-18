@@ -67,7 +67,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Header */}
         <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+            <span className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
               <Settings className="w-5 h-5" />
             </span>
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
@@ -76,7 +76,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -103,7 +103,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onClick={() => handleThemeChange(t.id as ThemeMode)}
                     className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-950 dark:text-indigo-200 ring-2 ring-indigo-500/20'
+                        ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 ring-2 ring-emerald-500/20'
                         : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
@@ -134,7 +134,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       onClick={() => handleDensityChange(d)}
                       className={`py-1.5 px-3 rounded-lg text-xs font-medium capitalize border transition-colors cursor-pointer ${
                         settings.rowDensity === d
-                          ? 'bg-white dark:bg-slate-900 border-indigo-600 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                          ? 'bg-white dark:bg-slate-900 border-emerald-600 text-emerald-600 dark:text-emerald-400 shadow-xs font-bold'
                           : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800'
                       }`}
                     >
@@ -160,7 +160,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange={(e) =>
                     onUpdateSettings({ ...settings, showRowNumbers: e.target.checked })
                   }
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                 />
               </div>
 
@@ -181,7 +181,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       onClick={() => handleNullFormatChange(fmt)}
                       className={`px-2.5 py-1 text-xs font-mono rounded-md border transition-colors cursor-pointer ${
                         settings.nullDisplayFormat === fmt
-                          ? 'bg-indigo-600 border-indigo-600 text-white'
+                          ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
                           : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100'
                       }`}
                     >
@@ -202,7 +202,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <HardDrive className="w-4 h-4 text-indigo-500" />
+                  <HardDrive className="w-4 h-4 text-emerald-500" />
                   <div>
                     <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
                       Browser Storage Footprint

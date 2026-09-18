@@ -48,7 +48,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
               <div className="flex items-center gap-2 mb-2 text-slate-900 dark:text-slate-100 font-semibold text-sm">
-                <HardDrive className="w-4 h-4 text-indigo-500" />
+                <HardDrive className="w-4 h-4 text-emerald-500" />
                 Local Storage Only
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -66,34 +66,43 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-              <div className="flex items-center gap-2 mb-2 text-slate-900 dark:text-slate-100 font-semibold text-sm">
-                <Lock className="w-4 h-4 text-amber-500" />
-                In-Memory SQL Execution
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0">
+                <HardDrive className="w-4 h-4 text-emerald-500" />
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                SQL queries execute entirely in browser memory using AlaSQL, executing locally at sub-millisecond speeds.
-              </p>
+              <div>
+                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Local-Only Storage
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  Your raw JSON, flattened tabular schemas, and SQL query history are stored directly in your browser's IndexedDB and localStorage.
+                </p>
+              </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-              <div className="flex items-center gap-2 mb-2 text-slate-900 dark:text-slate-100 font-semibold text-sm">
-                <Check className="w-4 h-4 text-indigo-500" />
-                Export Generated Locally
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center shrink-0">
+                <Check className="w-4 h-4 text-emerald-500" />
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                CSV and JSON files are compiled into browser Blob objects and saved directly to your downloads.
-              </p>
+              <div>
+                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Offline-Ready & Airgapped
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                  The application works completely offline. You can disconnect your network connection entirely and continue processing, exploring, and querying datasets.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Footer */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm"
+            className="px-5 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm cursor-pointer"
           >
-            Understood
+            I Understand
           </button>
         </div>
       </div>

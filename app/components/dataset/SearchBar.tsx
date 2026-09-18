@@ -40,7 +40,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
-      <div className="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all">
+      <div className="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/80 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-transparent transition-all">
         <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
         <input
           ref={inputRef}
@@ -77,7 +77,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
       {/* Matching indicator */}
       {isFiltered && (
-        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 whitespace-nowrap animate-in fade-in">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 whitespace-nowrap animate-in fade-in">
           {matchCount.toLocaleString()} matching rows
         </span>
       )}

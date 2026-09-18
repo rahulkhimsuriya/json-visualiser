@@ -52,7 +52,7 @@ export const ColumnVisibilityMenu: React.FC<ColumnVisibilityMenuProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={onShowAll}
-                  className="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                  className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                 >
                   Show all
                 </button>
@@ -78,7 +78,7 @@ export const ColumnVisibilityMenu: React.FC<ColumnVisibilityMenuProps> = ({
                     <div
                       className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
                         isVisible
-                          ? 'bg-indigo-600 border-indigo-600 text-white'
+                          ? 'bg-emerald-600 border-emerald-600 text-white'
                           : 'border-slate-300 dark:border-slate-600'
                       }`}
                     >

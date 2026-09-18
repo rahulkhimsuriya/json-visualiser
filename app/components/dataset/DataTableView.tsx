@@ -197,40 +197,46 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
   const renderTypeIcon = (type: string) => {
     switch (type) {
       case 'number':
-        return <Hash className="w-3 h-3 text-emerald-500" />;
+        return <Hash className="w-3.5 h-3.5 text-emerald-500" />;
       case 'date':
-        return <Calendar className="w-3 h-3 text-amber-500" />;
+        return <Calendar className="w-3.5 h-3.5 text-amber-500" />;
       case 'boolean':
-        return <ToggleLeft className="w-3 h-3 text-purple-500" />;
+        return <ToggleLeft className="w-3.5 h-3.5 text-purple-500" />;
+      case 'string':
+        return <Type className="w-3.5 h-3.5 text-emerald-500" />;
       default:
-        return <Type className="w-3 h-3 text-indigo-500" />;
+        return <Database className="w-3.5 h-3.5 text-slate-400" />;
     }
   };
 
   const renderCellContent = (val: any) => {
-    if (val === null || val === undefined) {
+    if (val === null || val === undefined || val === '') {
       return (
-        <span className="text-slate-400 dark:text-slate-500 italic font-mono text-xs">
-          {settings.nullDisplayFormat}
+        <span className="text-slate-400 dark:text-slate-500 italic text-xs font-mono">
+          {settings.nullDisplayFormat === 'null'
+            ? 'null'
+            : settings.nullDisplayFormat === '(empty)'
+            ? '(empty)'
+            : '—'}
         </span>
       );
     }
     if (typeof val === 'boolean') {
       return (
         <span
-          className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold font-mono ${
+          className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold ${
             val
-              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
-              : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300'
+              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700/80'
           }`}
         >
-          {val ? 'TRUE' : 'FALSE'}
+          {String(val)}
         </span>
       );
     }
     if (typeof val === 'object') {
       return (
-        <span className="font-mono text-xs text-indigo-600 dark:text-indigo-400 truncate max-w-xs block" title={JSON.stringify(val)}>
+        <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 truncate max-w-xs block border border-slate-200/60 dark:border-slate-700/60" title={JSON.stringify(val)}>
           {JSON.stringify(val)}
         </span>
       );
@@ -242,8 +248,8 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
     settings.rowDensity === 'compact'
       ? 'py-1.5 px-3 text-xs'
       : settings.rowDensity === 'relaxed'
-      ? 'py-3.5 px-4 text-sm'
-      : 'py-2 px-3.5 text-xs sm:text-sm';
+      ? 'py-3 px-4 text-sm'
+      : 'py-2.5 px-3.5 text-xs sm:text-sm';
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -286,32 +292,32 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
       />
 
       {/* Main Spreadsheet Table Container */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-[460px]">
+      <div className="flex-1 bg-white dark:bg-[#0e1320] rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-xs overflow-hidden flex flex-col min-h-[480px]">
         {/* Table summary bar */}
-        <div className="px-4 py-2 bg-slate-50/70 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+        <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-2 font-medium">
             <span>
-              Showing <strong className="text-slate-800 dark:text-slate-200">{paginatedRows.length}</strong> of{' '}
-              <strong className="text-slate-800 dark:text-slate-200">{totalRows.toLocaleString()}</strong> rows
+              Showing <strong className="text-slate-900 dark:text-white font-bold">{paginatedRows.length}</strong> of{' '}
+              <strong className="text-slate-900 dark:text-white font-bold">{totalRows.toLocaleString()}</strong> rows
             </span>
             {totalRows !== dataset.rowCount && (
-              <span className="text-amber-600 dark:text-amber-400">
+              <span className="text-amber-600 dark:text-amber-400 font-semibold">
                 (filtered from {dataset.rowCount.toLocaleString()})
               </span>
             )}
-            <span>·</span>
+            <span>•</span>
             <span>{visibleColumns.length} visible columns</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px]">Rows per page:</span>
+            <span className="text-[11px] font-medium">Rows per page:</span>
             <select
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-0.5 text-xs text-slate-800 dark:text-slate-200 focus:outline-none"
+              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
             >
               <option value={50}>50</option>
               <option value={100}>100</option>
@@ -325,12 +331,12 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
         {/* Scrollable Table */}
         <div className="flex-1 overflow-auto relative">
           <table className="w-full border-collapse text-left">
-            {/* Sticky Header */}
-            <thead className="sticky top-0 z-10 bg-slate-100/95 dark:bg-slate-800/95 backdrop-blur-xs border-b border-slate-200 dark:border-slate-700">
+            {/* Sticky Frosted Header */}
+            <thead className="sticky top-0 z-10 bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-700/80">
               <tr>
                 {/* Row Number Column */}
                 {settings.showRowNumbers && (
-                  <th className="w-14 px-3 py-2.5 text-center text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-r border-slate-200 dark:border-slate-700 select-none bg-slate-100 dark:bg-slate-800">
+                  <th className="w-14 px-3 py-3 text-center text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-r border-slate-200/80 dark:border-slate-700/80 select-none bg-slate-100/80 dark:bg-slate-800/80">
                     #
                   </th>
                 )}
@@ -344,7 +350,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
                     <th
                       key={col.key}
                       style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
-                      className="relative px-3 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700/60 select-none group hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors"
+                      className="relative px-3.5 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200/70 dark:border-slate-700/60 select-none group hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors"
                     >
                       <div
                         onClick={() => handleSort(col.key)}
@@ -356,12 +362,12 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
                           <span className="truncate">{col.label}</span>
                         </div>
 
-                        <span className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 shrink-0">
+                        <span className="text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 shrink-0">
                           {isSorted ? (
                             sortRule?.direction === 'asc' ? (
-                              <ArrowUp className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                              <ArrowUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                             ) : (
-                              <ArrowDown className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                              <ArrowDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                             )
                           ) : (
                             <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-100" />
@@ -372,7 +378,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
                       {/* Resizing Handle */}
                       <div
                         onMouseDown={(e) => onMouseDownResize(col.key, e)}
-                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-indigo-500/50 transition-colors z-20"
+                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500 transition-colors z-20"
                       />
                     </th>
                   );
@@ -381,16 +387,16 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
             </thead>
 
             {/* Table Body */}
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
               {paginatedRows.map((row, rIdx) => {
                 const actualRowNumber = startIdx + rIdx + 1;
                 return (
                   <tr
                     key={rIdx}
-                    className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-colors"
+                    className="hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 transition-colors"
                   >
                     {settings.showRowNumbers && (
-                      <td className="w-14 px-3 py-2 text-center text-xs font-mono text-slate-400 border-r border-slate-100 dark:border-slate-800 select-none bg-slate-50/50 dark:bg-slate-900/40">
+                      <td className="w-14 px-3 py-2 text-center text-xs font-mono text-slate-400 dark:text-slate-500 border-r border-slate-100 dark:border-slate-800/80 select-none bg-slate-50/40 dark:bg-slate-900/30">
                         {actualRowNumber}
                       </td>
                     )}
@@ -415,7 +421,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
 
           {/* Empty state for zero rows */}
           {totalRows === 0 && (
-            <div className="py-16">
+            <div className="py-20">
               <EmptyState
                 icon={Search}
                 title="No matching records found"
@@ -432,13 +438,13 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
 
         {/* Pagination Controls Footer */}
         {totalRows > 0 && (
-          <div className="p-3 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span className="text-slate-500 dark:text-slate-400">
-              Page <strong className="text-slate-800 dark:text-slate-200">{currentPage}</strong> of{' '}
-              <strong className="text-slate-800 dark:text-slate-200">{totalPages}</strong>
+          <div className="p-3 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">
+              Page <strong className="text-slate-900 dark:text-white font-bold">{currentPage}</strong> of{' '}
+              <strong className="text-slate-900 dark:text-white font-bold">{totalPages}</strong>
             </span>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPage(1)}
                 disabled={currentPage === 1}
@@ -456,7 +462,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
 
-              <span className="px-3 py-1 font-mono font-medium text-slate-700 dark:text-slate-300">
+              <span className="px-3 py-1 font-mono font-bold text-slate-800 dark:text-slate-200">
                 {currentPage} / {totalPages}
               </span>
 

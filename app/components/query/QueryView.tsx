@@ -12,7 +12,8 @@ import {
   Database,
   Layers,
   ChevronRight,
-  Code
+  Code,
+  Zap
 } from 'lucide-react';
 import type { Dataset } from '../../types/dataset';
 import type { QueryHistoryItem, QueryResult, SavedQuery } from '../../types/query';
@@ -66,6 +67,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
       setSql(initialSql);
     }
   }, [initialSql]);
+
   const [isRunning, setIsRunning] = useState(false);
 
   // Drawers state
@@ -105,7 +107,6 @@ export const QueryView: React.FC<QueryViewProps> = ({
     if (error) {
       setQueryError(error);
       setQueryResult(null);
-      // Log failed query in history
       onAddHistoryItem({
         id: `q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         sql: targetSql,
@@ -118,7 +119,6 @@ export const QueryView: React.FC<QueryViewProps> = ({
     } else if (result) {
       setQueryResult(result);
       setQueryError(null);
-      // Log successful query in history
       onAddHistoryItem({
         id: `q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         sql: targetSql,
@@ -194,51 +194,51 @@ export const QueryView: React.FC<QueryViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* SQL Editor Area (8 cols on lg) */}
         <div className="lg:col-span-8 flex flex-col space-y-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-[#0e1320] border border-slate-200/90 dark:border-slate-800/90 rounded-2xl shadow-xs overflow-hidden flex flex-col">
             {/* Header / snippet chips */}
-            <div className="p-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-2">
+            <div className="p-3 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                  SQL Editor
+                <div className="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <Terminal className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  SQL Query Editor
                 </span>
                 <span className="text-[11px] text-slate-400 hidden sm:inline">
-                  (Default table: <code className="font-mono text-indigo-600 dark:text-indigo-400 font-bold">data</code>)
+                  (Default table: <code className="font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-1 py-0.5 rounded">data</code>)
                 </span>
               </div>
 
-              {/* Drawers toggles */}
-              <div className="flex items-center gap-1.5">
+              {/* Top right: Drawer toggles */}
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsSavedOpen(true)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
                 >
-                  <Bookmark className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>Saved</span>
-                  <span className="text-[10px] text-slate-400 font-mono">({savedQueries.length})</span>
+                  <Bookmark className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Saved ({savedQueries.length})</span>
                 </button>
 
                 <button
                   onClick={() => setIsHistoryOpen(true)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
                 >
-                  <History className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>History</span>
-                  <span className="text-[10px] text-slate-400 font-mono">({history.length})</span>
+                  <History className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>History ({history.length})</span>
                 </button>
               </div>
             </div>
 
             {/* Snippet chips */}
-            <div className="px-4 py-2 bg-slate-50/40 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/60 flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] text-slate-400 mr-1 flex items-center gap-1">
+            <div className="px-4 py-2 bg-slate-50/50 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto text-xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-500" /> Templates:
               </span>
               {snippets.map((snip, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSql(snip.sql)}
-                  className="px-2 py-0.5 text-[11px] font-mono bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 border border-slate-200 dark:border-slate-700 rounded-md transition-colors cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] font-mono font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer shadow-2xs"
                 >
                   {snip.label}
                 </button>
@@ -251,27 +251,27 @@ export const QueryView: React.FC<QueryViewProps> = ({
                 ref={textareaRef}
                 value={sql}
                 onChange={(e) => setSql(e.target.value)}
-                rows={8}
-                placeholder="SELECT * FROM data LIMIT 100;"
-                className="w-full p-4 font-mono text-xs sm:text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none resize-y leading-relaxed"
+                rows={7}
+                placeholder="SELECT * FROM data LIMIT 50;"
+                className="w-full p-4 font-mono text-xs sm:text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none resize-y leading-relaxed selection:bg-emerald-500/20"
                 spellCheck={false}
               />
             </div>
 
             {/* Footer Toolbar */}
-            <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-3">
+            <div className="p-3 bg-slate-50/80 dark:bg-slate-900/60 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => runQuery()}
                   disabled={isRunning || !sql.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 disabled:opacity-50 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl shadow-md shadow-emerald-600/25 active:scale-[0.98] disabled:opacity-50 transition-all cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
-                  {isRunning ? 'Executing...' : 'Run Query'}
+                  {isRunning ? 'Running...' : 'Run Query'}
                 </button>
 
-                <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
-                  {typeof navigator !== 'undefined' && /Mac/.test(navigator.platform) ? '⌘+Enter' : 'Ctrl+Enter'}
+                <span className="text-[11px] text-slate-400 hidden sm:inline">
+                  Press <kbd className="font-mono font-semibold text-slate-600 dark:text-slate-300 bg-slate-200/70 dark:bg-slate-800 px-1.5 py-0.5 rounded">Ctrl/⌘ + Enter</kbd>
                 </span>
               </div>
 
@@ -279,16 +279,16 @@ export const QueryView: React.FC<QueryViewProps> = ({
                 <button
                   onClick={() => setShowSaveDialog(true)}
                   disabled={!sql.trim()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 >
-                  <Bookmark className="w-3.5 h-3.5 text-indigo-500" />
-                  Save Query
+                  <Bookmark className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Save Query</span>
                 </button>
 
                 <button
                   onClick={() => setSql('')}
                   disabled={!sql.trim()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-slate-400" />
                   Clear
@@ -297,7 +297,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
             </div>
           </div>
 
-          {/* Query Error Box (Phase 12) */}
+          {/* Query Error Box */}
           {queryError && (
             <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl flex items-start gap-3 text-rose-900 dark:text-rose-200 animate-in fade-in">
               <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
@@ -315,7 +315,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
             </div>
           )}
 
-          {/* Query Results Table (Phase 11) */}
+          {/* Query Results Table */}
           {queryResult && (
             <QueryResultsTable
               result={queryResult}
@@ -324,7 +324,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
           )}
 
           {!queryResult && !queryError && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center">
+            <div className="bg-white dark:bg-[#0e1320] border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-8 text-center shadow-xs">
               <EmptyState
                 icon={Terminal}
                 title="No query results yet"
@@ -353,7 +353,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-2xl w-full max-w-md space-y-4"
           >
             <div className="flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-indigo-500" />
+              <Bookmark className="w-5 h-5 text-emerald-500" />
               <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                 Save SQL Query
               </h3>
@@ -371,7 +371,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
                 placeholder="e.g. Indian Customers, Top Orders by Amount"
                 value={saveName}
                 onChange={(e) => setSaveName(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 autoFocus
               />
             </div>
@@ -387,7 +387,7 @@ export const QueryView: React.FC<QueryViewProps> = ({
               <button
                 type="submit"
                 disabled={!saveName.trim()}
-                className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm disabled:opacity-40 transition-colors"
+                className="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm disabled:opacity-40 transition-colors"
               >
                 Save
               </button>

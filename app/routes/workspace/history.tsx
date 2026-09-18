@@ -57,7 +57,7 @@ export default function WorkspaceHistoryPage() {
       {/* Top Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <History className="w-5 h-5" />
           </div>
           <div>
@@ -76,92 +76,95 @@ export default function WorkspaceHistoryPage() {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 border border-rose-200 dark:border-rose-900/60 rounded-xl transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            Clear All History
+            <span>Clear History</span>
           </button>
         )}
       </div>
 
-      {/* History Items */}
-      <div className="space-y-6">
-        {grouped.map((group) => (
-          <div key={group.label} className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              {group.label}
-            </h2>
+      {queryHistory.length === 0 ? (
+        <EmptyState
+          icon={History}
+          title="No query history yet"
+          description="Every SQL query you execute in the Query tab is recorded here in browser storage so you can review and replay it anytime."
+          actionText="Open Query Studio"
+          onAction={() => navigate('/workspace/query')}
+        />
+      ) : (
+        <div className="space-y-6">
+          {grouped.map((group) => (
+            <div key={group.label} className="space-y-3">
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                {group.label}
+              </h2>
 
-            <div className="space-y-3">
-              {group.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-all space-y-3"
-                >
-                  <pre className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap border border-slate-200/60 dark:border-slate-700/60">
-                    {item.sql}
-                  </pre>
+              <div className="space-y-3">
+                {group.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700 transition-all space-y-2.5"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                        <span className="flex items-center gap-1 font-medium">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          {new Date(item.timestamp).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                        <span>•</span>
+                        <span className="font-mono text-[11px]">
+                          {item.executionTimeMs.toFixed(1)}ms
+                        </span>
+                        <span>•</span>
+                        <span className="font-mono text-[11px]">
+                          {item.rowCount.toLocaleString()} rows
+                        </span>
+                      </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 pt-1">
-                    <div className="flex items-center gap-3 font-mono text-[11px]">
-                      <span>
-                        <strong className="text-slate-700 dark:text-slate-300 font-semibold">
-                          {item.rowCount.toLocaleString()}
-                        </strong>{' '}
-                        rows
-                      </span>
-                      <span>•</span>
-                      <span>{item.executionTimeMs}ms execution</span>
-                      <span>•</span>
-                      <span>{new Date(item.timestamp).toLocaleTimeString()}</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleCopy(item.id, item.sql)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer text-xs"
+                          title="Copy SQL"
+                        >
+                          {copiedId === item.id ? (
+                            <Check className="w-3 h-3 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                          <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleRunInStudio(item.sql)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors cursor-pointer text-xs shadow-xs"
+                          title="Run this query in SQL Studio"
+                        >
+                          <Play className="w-3 h-3 fill-white" />
+                          <span>Run in Studio</span>
+                        </button>
+
+                        <button
+                          onClick={() => deleteQueryHistory(item.id)}
+                          className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                          title="Delete from history"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleCopy(item.id, item.sql)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
-                        title="Copy SQL"
-                      >
-                        {copiedId === item.id ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-500" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                        <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleRunInStudio(item.sql)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors cursor-pointer shadow-xs"
-                      >
-                        <Play className="w-3 h-3 fill-white" />
-                        <span>Run in Studio</span>
-                      </button>
-
-                      <button
-                        onClick={() => deleteQueryHistory(item.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
-                        title="Delete from history"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+                    <pre className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap border border-slate-200/60 dark:border-slate-700/60 leading-relaxed">
+                      {item.sql}
+                    </pre>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-
-        {queryHistory.length === 0 && (
-          <div className="py-16">
-            <EmptyState
-              icon={Clock}
-              title="No query history"
-              description="Queries you run in the SQL Query studio will be automatically preserved here."
-              actionText="Open Query Studio"
-              onAction={() => navigate('/workspace/query')}
-            />
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

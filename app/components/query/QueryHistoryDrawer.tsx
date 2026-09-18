@@ -60,7 +60,7 @@ export const QueryHistoryDrawer: React.FC<QueryHistoryDrawerProps> = ({
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-indigo-500" />
+            <History className="w-4 h-4 text-emerald-500" />
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
               Query History
             </h2>
@@ -100,7 +100,7 @@ export const QueryHistoryDrawer: React.FC<QueryHistoryDrawerProps> = ({
                 {group.items.map((item) => (
                   <div
                     key={item.id}
-                    className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all group"
+                    className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/80 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group"
                   >
                     <pre className="font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap line-clamp-3 mb-2.5">
                       {item.sql}
@@ -131,7 +131,7 @@ export const QueryHistoryDrawer: React.FC<QueryHistoryDrawerProps> = ({
                             onClose();
                           }}
                           title="Load into Editor"
-                          className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                          className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                         >
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </button>
