@@ -112,8 +112,8 @@ Most JSON viewers only display raw trees or format strings. **JSON Visualiser** 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/json-visualiser-app.git
-   cd json-visualiser-app
+   git clone https://github.com/rahulkhimsuriya/json-visualiser.git
+   cd json-visualiser
    ```
 
 2. Install dependencies:
