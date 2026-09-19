@@ -199,9 +199,9 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="flex flex-col space-y-4 flex-1 min-h-0 w-full">
       {/* Top Banner / Privacy Callout */}
-      <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-white/70 dark:bg-[#0e1320]/70 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-3 rounded-xl bg-white/70 dark:bg-[#0e1320]/70 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Import & Ingest JSON</span>

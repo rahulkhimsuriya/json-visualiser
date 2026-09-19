@@ -30,7 +30,7 @@ export default function ImportPage() {
   };
 
   return (
-    <div className="flex-1 py-4">
+    <div className="flex-1 flex flex-col min-h-0 max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 lg:py-6 space-y-4">
       <JsonInputView
         onDatasetCreated={handleDatasetCreated}
         onCancel={handleCancel}
