@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronsDown,
   ChevronsUp,
+  CloudUpload,
 } from 'lucide-react'
 import type { Route } from './+types/formatter'
 import {
@@ -166,6 +167,7 @@ export default function FormatterPage() {
   const [treeRenderKey, setTreeRenderKey] = useState(0)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dragCounterRef = useRef(0)
 
   // Auto-sync: left changes automatically reflect on right
   useEffect(() => {
@@ -205,8 +207,30 @@ export default function FormatterPage() {
     reader.readAsText(file)
   }
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounterRef.current += 1
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounterRef.current -= 1
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0
+      setIsDragging(false)
+    }
+  }
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
+    dragCounterRef.current = 0
     setIsDragging(false)
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFileUpload(e.dataTransfer.files[0])
@@ -370,7 +394,7 @@ export default function FormatterPage() {
 
       {/* TOP / UPPER SECTION: Action Buttons & Controls Bar */}
       <div className="p-3 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
-        {/* Left Action Buttons: Upload, Download, Open in Workspace */}
+        {/* Left Action Buttons: Upload, Open in Workspace */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => fileInputRef.current?.click()}
@@ -379,16 +403,6 @@ export default function FormatterPage() {
           >
             <UploadCloud className="w-3.5 h-3.5" />
             <span>Upload JSON File</span>
-          </button>
-
-          <button
-            onClick={handleDownload}
-            disabled={!outputJson && !inputJson}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
-            title="Download formatted JSON"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-            <span>Download</span>
           </button>
 
           <button
@@ -468,13 +482,11 @@ export default function FormatterPage() {
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 flex-1 min-h-0 items-stretch max-h-[calc(100dvh-180px)] lg:max-h-[calc(100dvh-200px)] overflow-hidden">
         {/* LEFT SECTION: Raw Input & File Import */}
         <div
-          onDragOver={(e) => {
-            e.preventDefault()
-            setIsDragging(true)
-          }}
-          onDragLeave={() => setIsDragging(false)}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`flex flex-col flex-1 min-h-0 max-h-[calc(100dvh-180px)] lg:max-h-[calc(100dvh-200px)] rounded-2xl bg-white dark:bg-[#0e1422] border transition-all shadow-xs overflow-hidden ${
+          className={`relative flex flex-col flex-1 min-h-0 max-h-[calc(100dvh-180px)] lg:max-h-[calc(100dvh-200px)] rounded-2xl bg-white dark:bg-[#0e1422] border transition-all shadow-xs overflow-hidden ${
             isDragging
               ? 'border-emerald-500 ring-2 ring-emerald-500/30'
               : 'border-slate-200/90 dark:border-slate-800/90'
@@ -555,6 +567,16 @@ export default function FormatterPage() {
               className="w-full h-full min-h-0 p-4 font-mono text-xs sm:text-sm text-slate-900 dark:text-slate-100 bg-transparent border-0 focus:outline-none resize-none leading-relaxed selection:bg-emerald-500/20 overflow-auto"
             />
           </div>
+
+          {/* Drag & Drop Preview Overlay - pointer-events-none prevents flicker */}
+          {isDragging && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-[#0e1a22]/70 backdrop-blur-[2px] border-2 border-dashed border-emerald-500 rounded-2xl m-2 pointer-events-none">
+              <CloudUpload className="w-10 h-10 text-emerald-400" />
+              <p className="text-emerald-300 font-semibold text-sm tracking-wide">
+                Drop your JSON file here
+              </p>
+            </div>
+          )}
         </div>
 
         {/* RIGHT SECTION: Formatted / Minified Output */}
@@ -606,6 +628,15 @@ export default function FormatterPage() {
                 aria-label="Collapse all JSON nodes"
               >
                 <ChevronsUp className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+              </button>
+              <button
+                onClick={handleDownload}
+                disabled={!outputJson && !inputJson}
+                className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
+                title="Download formatted JSON"
+                aria-label="Download formatted JSON"
+              >
+                <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </button>
               <button
                 onClick={handleCopyRight}
