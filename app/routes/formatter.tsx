@@ -213,26 +213,36 @@ export default function FormatterPage() {
     }
   }
 
-  // Prettify
+  // Prettify - formats left-side data
   const handlePrettify = () => {
     if (!inputJson.trim()) return
-    const val = validateJsonString(inputJson)
-    if (!val.isValid && val.error) {
-      setValidationError(val.error)
-      return
+    try {
+      const formatted = formatJson(inputJson, indentSize)
+      setInputJson(formatted)
+      setActiveMode('prettify')
+      setValidationError(null)
+    } catch {
+      const val = validateJsonString(inputJson)
+      if (!val.isValid && val.error) {
+        setValidationError(val.error)
+      }
     }
-    setActiveMode('prettify')
   }
 
-  // Minify
+  // Minify - formats left-side data
   const handleMinify = () => {
     if (!inputJson.trim()) return
-    const val = validateJsonString(inputJson)
-    if (!val.isValid && val.error) {
-      setValidationError(val.error)
-      return
+    try {
+      const minified = minifyJson(inputJson)
+      setInputJson(minified)
+      setActiveMode('minify')
+      setValidationError(null)
+    } catch {
+      const val = validateJsonString(inputJson)
+      if (!val.isValid && val.error) {
+        setValidationError(val.error)
+      }
     }
-    setActiveMode('minify')
   }
 
   // Copy Left (Raw Input)
@@ -497,30 +507,22 @@ export default function FormatterPage() {
               <button
                 onClick={handleMinify}
                 disabled={!inputJson.trim()}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-40 ${
-                  activeMode === 'minify'
-                    ? 'bg-teal-600 text-white shadow-xs ring-1 ring-teal-500/30'
-                    : 'text-teal-700 hover:bg-teal-500/15 dark:text-teal-300'
-                }`}
+                className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Minify JSON"
                 aria-label="Minify JSON"
                 aria-pressed={activeMode === 'minify'}
               >
-                <Minimize2 className="h-4 w-4" />
+                <Minimize2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </button>
               <button
                 onClick={handlePrettify}
                 disabled={!inputJson.trim()}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors disabled:opacity-40 ${
-                  activeMode === 'prettify'
-                    ? 'bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-500/30'
-                    : 'text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-300'
-                }`}
+                className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Prettify JSON"
                 aria-label="Prettify JSON"
                 aria-pressed={activeMode === 'prettify'}
               >
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </button>
               <button
                 onClick={handleCopyLeft}
@@ -587,11 +589,11 @@ export default function FormatterPage() {
                   setTreeRenderKey((key) => key + 1)
                 }}
                 disabled={parsedOutput === undefined}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-teal-700 transition-colors hover:bg-teal-500/15 disabled:opacity-40 dark:text-teal-300"
+                className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Expand all JSON nodes"
                 aria-label="Expand all JSON nodes"
               >
-                <ChevronsDown className="h-4 w-4" />
+                <ChevronsDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </button>
               <button
                 onClick={() => {
@@ -599,11 +601,11 @@ export default function FormatterPage() {
                   setTreeRenderKey((key) => key + 1)
                 }}
                 disabled={parsedOutput === undefined}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-teal-700 transition-colors hover:bg-teal-500/15 disabled:opacity-40 dark:text-teal-300"
+                className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Collapse all JSON nodes"
                 aria-label="Collapse all JSON nodes"
               >
-                <ChevronsUp className="h-4 w-4" />
+                <ChevronsUp className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </button>
               <button
                 onClick={handleCopyRight}
