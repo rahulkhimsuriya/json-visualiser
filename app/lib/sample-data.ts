@@ -9,7 +9,7 @@ export interface SampleDatasetPreset {
 export const SAMPLE_USERS = [
   {
     id: 1,
-    name: "Rahul Sharma",
+    name: "Rahul Khimsuriya",
     email: "rahul@example.com",
     age: 29,
     active: true,
