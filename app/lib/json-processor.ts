@@ -9,6 +9,46 @@ export interface ParseErrorDetails {
 }
 
 export function validateJsonString(raw: string): { isValid: boolean; error?: ParseErrorDetails } {
+  const result = parseJsonString(raw);
+  return result.isValid ? { isValid: true } : { isValid: false, error: result.error };
+}
+
+function createParseError(raw: string, err: unknown): ParseErrorDetails {
+  const trimmed = raw.trim();
+  const errorMsg = (err as { message?: string })?.message || 'Invalid JSON syntax';
+  let line: number | undefined;
+  let column: number | undefined;
+
+  const lineColMatch = errorMsg.match(/line (\d+) column (\d+)/i);
+  if (lineColMatch) {
+    line = parseInt(lineColMatch[1], 10);
+    column = parseInt(lineColMatch[2], 10);
+  } else {
+    const posMatch = errorMsg.match(/position (\d+)/i);
+    if (posMatch) {
+      const pos = parseInt(posMatch[1], 10);
+      const lines = trimmed.slice(0, pos).split('\n');
+      line = lines.length;
+      column = lines[lines.length - 1].length + 1;
+    }
+  }
+
+  const errLine = line === undefined ? undefined : trimmed.split('\n')[line - 1];
+  return {
+    message: `Invalid JSON\n\n${errorMsg}${line && column ? ` at line ${line}, column ${column}.` : '.'}\n\nPlease fix the JSON and try again.`,
+    line,
+    column,
+    snippet: errLine === undefined ? undefined : `Line ${line}: ${errLine.slice(0, 80)}`,
+    suggestion: 'Check for trailing commas, unquoted keys, or mismatched brackets/quotes.',
+  };
+}
+
+/**
+ * Parses JSON once and keeps the validation error format used by the import UI.
+ * Callers that need to transform the data can pass the returned value directly
+ * to `processParsedJsonToDataset` instead of parsing the same large payload again.
+ */
+export function parseJsonString(raw: string): { isValid: true; value: unknown } | { isValid: false; error: ParseErrorDetails } {
   const trimmed = raw.trim();
   if (!trimmed) {
     return {
@@ -22,50 +62,9 @@ export function validateJsonString(raw: string): { isValid: boolean; error?: Par
   }
 
   try {
-    JSON.parse(trimmed);
-    return { isValid: true };
-  } catch (err: any) {
-    const errorMsg = err?.message || 'Invalid JSON syntax';
-    let line: number | undefined;
-    let column: number | undefined;
-
-    // Check for "at line X column Y"
-    const lineColMatch = errorMsg.match(/line (\d+) column (\d+)/i);
-    if (lineColMatch) {
-      line = parseInt(lineColMatch[1], 10);
-      column = parseInt(lineColMatch[2], 10);
-    } else {
-      // Check for "position X"
-      const posMatch = errorMsg.match(/position (\d+)/i);
-      if (posMatch) {
-        const pos = parseInt(posMatch[1], 10);
-        const upToPos = trimmed.slice(0, pos);
-        const lines = upToPos.split('\n');
-        line = lines.length;
-        column = lines[lines.length - 1].length + 1;
-      }
-    }
-
-    // Get snippet
-    let snippet: string | undefined;
-    if (line) {
-      const lines = trimmed.split('\n');
-      const errLine = lines[line - 1];
-      if (errLine !== undefined) {
-        snippet = `Line ${line}: ${errLine.slice(0, 80)}`;
-      }
-    }
-
-    return {
-      isValid: false,
-      error: {
-        message: `Invalid JSON\n\n${errorMsg}${line && column ? ` at line ${line}, column ${column}.` : '.'}\n\nPlease fix the JSON and try again.`,
-        line,
-        column,
-        snippet,
-        suggestion: 'Check for trailing commas, unquoted keys, or mismatched brackets/quotes.',
-      },
-    };
+    return { isValid: true, value: JSON.parse(trimmed) };
+  } catch (err) {
+    return { isValid: false, error: createParseError(raw, err) };
   }
 }
 
@@ -162,6 +161,24 @@ export async function processJsonToDataset(
   await new Promise((r) => setTimeout(r, 0));
 
   const parsed = JSON.parse(rawJson);
+  return processParsedJsonToDataset(parsed, rawJson, datasetName, onProgress, true);
+}
+
+/**
+ * Builds a dataset from JSON that has already been parsed by the caller.
+ * This avoids a second full JSON.parse during large-file imports.
+ */
+export async function processParsedJsonToDataset(
+  parsed: unknown,
+  rawJson: string,
+  datasetName: string,
+  onProgress?: (progress: number, message: string) => void,
+  skipInitialProgress = false
+): Promise<Dataset> {
+  if (!skipInitialProgress) {
+    onProgress?.(10, 'JSON syntax validated...');
+    await new Promise((r) => setTimeout(r, 0));
+  }
 
   onProgress?.(25, 'Normalizing structure...');
   await new Promise((r) => setTimeout(r, 0));
@@ -171,10 +188,12 @@ export async function processJsonToDataset(
   if (Array.isArray(parsed)) {
     rawList = parsed;
   } else if (typeof parsed === 'object' && parsed !== null) {
+    const parsedObject = parsed as Record<string, unknown>;
     // Check if the object contains a main array property (e.g. { data: [...] } or { users: [...] })
-    const arrayKeys = Object.keys(parsed).filter((k) => Array.isArray(parsed[k]));
-    if (arrayKeys.length === 1 && parsed[arrayKeys[0]].length > 0) {
-      rawList = parsed[arrayKeys[0]];
+    const arrayKeys = Object.keys(parsedObject).filter((k) => Array.isArray(parsedObject[k]));
+    const onlyArray = arrayKeys.length === 1 ? parsedObject[arrayKeys[0]] : undefined;
+    if (Array.isArray(onlyArray) && onlyArray.length > 0) {
+      rawList = onlyArray;
     } else {
       // Single record
       rawList = [parsed];
