@@ -29,17 +29,23 @@ import { ProgressBar } from '../common/ProgressBar'
 import type { Dataset } from '../../types/dataset'
 
 const INLINE_EDITOR_FILE_LIMIT_BYTES = 2 * 1024 * 1024
-const JSON_EXAMPLE = JSON.stringify(
-  [
-    {
-      id: 1,
-      name: 'Rahul',
-      address: { city: 'Ahmedabad', country: 'India' },
-    },
-  ],
-  null,
-  2,
-)
+const JSON_EXAMPLE = `// 1. Paste raw JSON here, or
+// 2. Click "Upload JSON File" above, or
+// 3. Drag and drop a .json file directly into this area.
+
+[
+  {
+    "id": 1,
+    "name": "Rahul Khimsuriya",
+    "email": "rahul@example.com",
+    "role": "Admin",
+    "active": true,
+    "address": {
+      "city": "Ahmedabad",
+      "country": "India"
+    }
+  }
+]`
 
 interface JsonInputViewProps {
   onDatasetCreated: (dataset: Dataset) => void
@@ -201,16 +207,18 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
   return (
     <div className="flex flex-col space-y-4 flex-1 min-h-0 w-full">
       {/* Top Banner / Privacy Callout */}
-      <div className="p-3 rounded-xl bg-white/70 dark:bg-[#0e1320]/70 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+      <div className="shrink-0 p-3 rounded-xl bg-white/70 dark:bg-[#0e1320]/70 backdrop-blur-md border border-slate-200/90 dark:border-slate-800/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Import & Ingest JSON</span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80">
-              <Sparkles className="w-3 h-3 text-emerald-500" /> Auto Type Detection
+              <Sparkles className="w-3 h-3 text-emerald-500" /> Auto Type
+              Detection
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            100% Client-side. Automatically detects numbers, decimals, dates, datetimes, and timestamps.
+            100% Client-side. Automatically detects numbers, decimals, dates,
+            datetimes, and timestamps.
           </p>
         </div>
 
@@ -233,9 +241,9 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
       </div>
 
       {/* Main Box */}
-      <div className="bg-white dark:bg-[#0e1320] border border-slate-200/90 dark:border-slate-800/90 rounded-2xl shadow-xs overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col max-h-[calc(100dvh-180px)] lg:max-h-[calc(100dvh-200px)] bg-white dark:bg-[#0e1320] border border-slate-200/90 dark:border-slate-800/90 rounded-2xl shadow-xs overflow-hidden">
         {/* Name input & upload bar */}
-        <div className="p-4 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50 flex flex-wrap items-center justify-between gap-3">
+        <div className="shrink-0 p-4 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 min-w-[240px]">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Dataset Name:
@@ -281,7 +289,7 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
-          className={`relative transition-all ${
+          className={`relative flex-1 min-h-0 flex flex-col transition-all ${
             isDragging ? 'ring-4 ring-emerald-500/25 bg-emerald-50/10' : ''
           }`}
         >
@@ -295,9 +303,9 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
           )}
 
           {/* Textarea Editor */}
-          <div className="relative flex">
+          <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col p-2">
             {uploadedFile && (
-              <div className="m-4 w-full rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
+              <div className="m-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
                 <div className="flex items-center gap-2 font-semibold">
                   <FileCode2 className="h-4 w-4 shrink-0" />
                   {uploadedFile.name}
@@ -310,6 +318,7 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
               </div>
             )}
             <textarea
+              rows={22}
               value={jsonText}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder={
@@ -317,8 +326,7 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
                   ? 'This large file is ready to process.'
                   : JSON_EXAMPLE
               }
-              rows={18}
-              className="w-full p-4 font-mono text-xs sm:text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none resize-y leading-relaxed selection:bg-emerald-500/20"
+              className="w-full flex-1 h-full min-h-0 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none resize-none leading-relaxed selection:bg-emerald-500/20 overflow-y-auto"
               disabled={uploadedFile !== null}
               spellCheck={false}
             />
@@ -327,7 +335,7 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
 
         {/* Validation Error Message Box */}
         {validationError && (
-          <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border-t border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-900 dark:text-rose-200 animate-in fade-in">
+          <div className="shrink-0 p-4 bg-rose-50 dark:bg-rose-950/40 border-t border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-900 dark:text-rose-200 animate-in fade-in">
             <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
             <div className="flex-1 text-xs sm:text-sm">
               <p className="font-bold text-rose-800 dark:text-rose-300">
@@ -352,13 +360,13 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
 
         {/* Processing Progress Bar */}
         {isProcessing && (
-          <div className="p-6 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50">
+          <div className="shrink-0 p-6 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/50">
             <ProgressBar progress={progress} message={progressMessage} />
           </div>
         )}
 
         {/* Action Toolbar */}
-        <div className="p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-3">
+        <div className="shrink-0 p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-3">
           {/* Editor utilities */}
           <div className="flex flex-wrap items-center gap-2">
             <button
