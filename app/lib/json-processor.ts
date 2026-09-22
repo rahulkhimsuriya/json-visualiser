@@ -122,20 +122,107 @@ export function flattenObject(
   return res;
 }
 
-const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+const DATE_ONLY_REGEX = /^\d{4}[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12]\d|3[01])$/;
+const DATETIME_REGEX =
+  /^\d{4}[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12]\d|3[01])[T\s]([01]\d|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]\d{2}(:?\d{2})?)?$/i;
+const DECIMAL_STRING_REGEX = /^-?(0|[1-9]\d*)\.\d+$/;
+const INTEGER_STRING_REGEX = /^-?(0|[1-9]\d*)$/;
 
-function inferValueType(val: any): FieldType {
+// Epoch range constants (2000-01-01 to 2050-01-01)
+const MIN_EPOCH_SEC = 946684800;
+const MAX_EPOCH_SEC = 2524608000;
+const MIN_EPOCH_MS = 946684800000;
+const MAX_EPOCH_MS = 2524608000000;
+
+function isTimestampName(key?: string): boolean {
+  if (!key) return false;
+  const k = key.toLowerCase();
+  if (/(?:_id$|^id$|id$)/i.test(k)) return false;
+  return /(?:timestamp|epoch|_at$|at$|^time$|date)/i.test(k);
+}
+
+function isTimestampNumber(val: number, key?: string): boolean {
+  if (!Number.isFinite(val) || !Number.isInteger(val)) return false;
+  if (key && /(?:_id$|^id$|id$)/i.test(key)) return false;
+
+  const hasHint = isTimestampName(key);
+
+  // 13-digit epoch milliseconds
+  if (val >= MIN_EPOCH_MS && val <= MAX_EPOCH_MS) {
+    return true;
+  }
+
+  // 10-digit epoch seconds with timestamp-like field name
+  if (val >= MIN_EPOCH_SEC && val <= MAX_EPOCH_SEC && hasHint) {
+    return true;
+  }
+
+  return false;
+}
+
+export function inferValueType(val: any, key?: string): FieldType {
   if (val === null || val === undefined) return 'null';
-  if (typeof val === 'number') return 'number';
   if (typeof val === 'boolean') return 'boolean';
   if (Array.isArray(val)) return 'array';
   if (typeof val === 'object') return 'object';
+
+  if (typeof val === 'number') {
+    if (!Number.isFinite(val)) return 'null';
+    if (isTimestampNumber(val, key)) return 'timestamp';
+    if (Number.isInteger(val)) return 'number';
+    return 'decimal';
+  }
+
   if (typeof val === 'string') {
-    if (ISO_DATE_REGEX.test(val.trim()) && !isNaN(Date.parse(val))) {
-      return 'date';
+    const trimmed = val.trim();
+    if (!trimmed) return 'string';
+
+    const lower = trimmed.toLowerCase();
+    if (lower === 'true' || lower === 'false') {
+      return 'boolean';
     }
+
+    // Check date only (YYYY-MM-DD)
+    if (DATE_ONLY_REGEX.test(trimmed)) {
+      const parsedTime = Date.parse(trimmed);
+      if (!isNaN(parsedTime)) {
+        return 'date';
+      }
+    }
+
+    // Check datetime (ISO 8601 or YYYY-MM-DD HH:mm:ss)
+    if (DATETIME_REGEX.test(trimmed)) {
+      const parsedTime = Date.parse(trimmed);
+      if (!isNaN(parsedTime)) {
+        return 'datetime';
+      }
+    }
+
+    // Check string timestamp
+    if (isTimestampName(key) && (trimmed.length === 10 || trimmed.length === 13) && /^\d+$/.test(trimmed)) {
+      const num = Number(trimmed);
+      if (isTimestampNumber(num, key)) {
+        return 'timestamp';
+      }
+    }
+
+    // Check decimal string (-12.34, 0.5)
+    if (DECIMAL_STRING_REGEX.test(trimmed)) {
+      return 'decimal';
+    }
+
+    // Check integer string (-42, 100, avoiding leading zeros like 00123)
+    if (INTEGER_STRING_REGEX.test(trimmed)) {
+      const num = Number(trimmed);
+      if (isTimestampNumber(num, key)) {
+        return 'timestamp';
+      }
+      return 'number';
+    }
+
     return 'string';
   }
+
   return 'string';
 }
 
@@ -247,17 +334,18 @@ export async function processParsedJsonToDataset(
     let nullCount = 0;
     const typeCountMap: Record<FieldType, number> = {
       number: 0,
+      decimal: 0,
+      date: 0,
+      datetime: 0,
+      timestamp: 0,
       string: 0,
       boolean: 0,
-      date: 0,
       object: 0,
       array: 0,
       null: 0,
     };
     const uniqueValuesSet = new Set<string>();
     const sampleValues: any[] = [];
-    let minVal: any = undefined;
-    let maxVal: any = undefined;
 
     for (let i = 0; i < totalRows; i++) {
       const val = flatRows[i][key];
@@ -265,7 +353,7 @@ export async function processParsedJsonToDataset(
         nullCount++;
         typeCountMap.null++;
       } else {
-        const inferred = inferValueType(val);
+        const inferred = inferValueType(val, key);
         typeCountMap[inferred]++;
 
         const strVal = typeof val === 'object' ? JSON.stringify(val) : String(val);
@@ -276,30 +364,68 @@ export async function processParsedJsonToDataset(
         if (sampleValues.length < 5 && !sampleValues.includes(val)) {
           sampleValues.push(val);
         }
+      }
+    }
 
-        // Min/Max for numbers and strings/dates
-        if (typeof val === 'number') {
-          if (minVal === undefined || val < minVal) minVal = val;
-          if (maxVal === undefined || val > maxVal) maxVal = val;
-        } else if (typeof val === 'string') {
-          if (minVal === undefined || val < minVal) minVal = val;
-          if (maxVal === undefined || val > maxVal) maxVal = val;
+    // Determine dominant type with compatibility hierarchy
+    const nonNullCount = totalRows - nullCount;
+    let dominantType: FieldType = 'string';
+
+    if (nonNullCount === 0) {
+      dominantType = 'null';
+    } else {
+      const numericCount = typeCountMap.number + typeCountMap.decimal;
+      const dateCount = typeCountMap.date + typeCountMap.datetime;
+
+      if (
+        numericCount === nonNullCount ||
+        (numericCount / nonNullCount >= 0.8 && typeCountMap.string === 0 && typeCountMap.object === 0)
+      ) {
+        // Any decimal value elevates the column to decimal
+        dominantType = typeCountMap.decimal > 0 ? 'decimal' : 'number';
+      } else if (
+        dateCount === nonNullCount ||
+        (dateCount / nonNullCount >= 0.8 && typeCountMap.string === 0 && typeCountMap.object === 0)
+      ) {
+        // Any datetime value elevates the column to datetime
+        dominantType = typeCountMap.datetime > 0 ? 'datetime' : 'date';
+      } else if (typeCountMap.timestamp / nonNullCount >= 0.6) {
+        dominantType = 'timestamp';
+      } else {
+        let maxTypeCount = 0;
+        for (const [t, cnt] of Object.entries(typeCountMap) as [FieldType, number][]) {
+          if (t !== 'null' && cnt > maxTypeCount) {
+            maxTypeCount = cnt;
+            dominantType = t;
+          }
         }
       }
     }
 
-    // Determine dominant type (excluding null)
-    let dominantType: FieldType = 'string';
-    let maxTypeCount = 0;
-    for (const [t, cnt] of Object.entries(typeCountMap) as [FieldType, number][]) {
-      if (t !== 'null' && cnt > maxTypeCount) {
-        maxTypeCount = cnt;
-        dominantType = t;
-      }
-    }
+    // Calculate min/max based on dominantType
+    let minVal: any = undefined;
+    let maxVal: any = undefined;
 
-    if (maxTypeCount === 0) {
-      dominantType = 'null';
+    for (let i = 0; i < totalRows; i++) {
+      const val = flatRows[i][key];
+      if (val === null || val === undefined) continue;
+
+      if (dominantType === 'number' || dominantType === 'decimal' || dominantType === 'timestamp') {
+        const num = typeof val === 'number' ? val : Number(val);
+        if (!isNaN(num)) {
+          if (minVal === undefined || num < minVal) minVal = num;
+          if (maxVal === undefined || num > maxVal) maxVal = num;
+        }
+      } else if (dominantType === 'date' || dominantType === 'datetime') {
+        const time = Date.parse(String(val));
+        if (!isNaN(time)) {
+          if (minVal === undefined || time < Date.parse(String(minVal))) minVal = String(val);
+          if (maxVal === undefined || time > Date.parse(String(maxVal))) maxVal = String(val);
+        }
+      } else if (typeof val === 'string' || typeof val === 'number') {
+        if (minVal === undefined || val < minVal) minVal = val;
+        if (maxVal === undefined || val > maxVal) maxVal = val;
+      }
     }
 
     return {

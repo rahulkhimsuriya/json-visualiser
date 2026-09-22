@@ -205,10 +205,12 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Import & Ingest JSON</span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80">
+              <Sparkles className="w-3 h-3 text-emerald-500" /> Auto Type Detection
+            </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            100% Client-side. Paste or upload JSON data to analyze in structured
-            tables and run SQL queries locally.
+            100% Client-side. Automatically detects numbers, decimals, dates, datetimes, and timestamps.
           </p>
         </div>
 

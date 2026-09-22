@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Dataset } from '../types/dataset';
+import type { Dataset, FieldType } from '../types/dataset';
 import type { QueryHistoryItem, SavedQuery } from '../types/query';
 import { DEFAULT_SETTINGS, type AppSettings } from '../types/settings';
 import {
@@ -24,6 +24,7 @@ interface WorkspaceContextType {
   activeDatasetId: string | null;
   setActiveDatasetId: (id: string) => void;
   addDataset: (ds: Dataset) => Promise<void>;
+  updateColumnType: (datasetId: string, columnKey: string, newType: FieldType) => Promise<void>;
   deleteDataset: (id: string) => Promise<void>;
   loadPresetDataset: (preset: SampleDatasetPreset) => Promise<Dataset>;
   queryHistory: QueryHistoryItem[];
@@ -100,6 +101,23 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       return [newDataset, ...filtered];
     });
     setActiveDatasetIdState(newDataset.id);
+  };
+
+  const updateColumnType = async (datasetId: string, columnKey: string, newType: FieldType) => {
+    let targetDs: Dataset | null = null;
+    setDatasets((prev) =>
+      prev.map((ds) => {
+        if (ds.id !== datasetId) return ds;
+        const updatedColumns = ds.columns.map((col) =>
+          col.key === columnKey ? { ...col, type: newType } : col
+        );
+        targetDs = { ...ds, columns: updatedColumns };
+        return targetDs;
+      })
+    );
+    if (targetDs) {
+      await saveDatasetToStorage(targetDs);
+    }
   };
 
   const deleteDataset = async (id: string) => {
@@ -209,6 +227,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         activeDatasetId,
         setActiveDatasetId,
         addDataset,
+        updateColumnType,
         deleteDataset,
         loadPresetDataset,
         queryHistory,

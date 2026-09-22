@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Database, Table, ChevronRight, ChevronDown, Plus, Hash, Type, Calendar, ToggleLeft, Layers } from 'lucide-react';
+import { Database, Table, ChevronRight, ChevronDown, Plus, Hash, Type, Calendar, CalendarClock, Timer, Calculator, ToggleLeft, Layers } from 'lucide-react';
 import type { Dataset } from '../../types/dataset';
 
 interface DatasetSchemaSidebarProps {
@@ -26,12 +26,21 @@ export const DatasetSchemaSidebar: React.FC<DatasetSchemaSidebarProps> = ({
     switch (type) {
       case 'number':
         return <Hash className="w-3 h-3 text-emerald-500" />;
+      case 'decimal':
+        return <Calculator className="w-3 h-3 text-teal-500" />;
+      case 'datetime':
+        return <CalendarClock className="w-3 h-3 text-orange-500" />;
       case 'date':
         return <Calendar className="w-3 h-3 text-amber-500" />;
+      case 'timestamp':
+        return <Timer className="w-3 h-3 text-violet-500" />;
       case 'boolean':
         return <ToggleLeft className="w-3 h-3 text-purple-500" />;
+      case 'object':
+      case 'array':
+        return <Layers className="w-3 h-3 text-cyan-500" />;
       default:
-        return <Type className="w-3 h-3 text-emerald-500" />;
+        return <Type className="w-3 h-3 text-blue-500" />;
     }
   };
 

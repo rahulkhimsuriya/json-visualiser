@@ -12,6 +12,9 @@ import {
   ChevronsRight,
   Database,
   Calendar,
+  CalendarClock,
+  Timer,
+  Calculator,
   Hash,
   Type,
   ToggleLeft
@@ -98,14 +101,34 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
               return strVal.startsWith(target);
             case 'ends_with':
               return strVal.endsWith(target);
-            case 'greater_than':
+            case 'greater_than': {
+              const ruleCol = dataset.columns.find((c) => c.key === rule.column);
+              if (ruleCol?.type === 'date' || ruleCol?.type === 'datetime') {
+                return Date.parse(String(val)) > Date.parse(rule.value);
+              }
               return Number(val) > Number(rule.value);
-            case 'less_than':
+            }
+            case 'less_than': {
+              const ruleCol = dataset.columns.find((c) => c.key === rule.column);
+              if (ruleCol?.type === 'date' || ruleCol?.type === 'datetime') {
+                return Date.parse(String(val)) < Date.parse(rule.value);
+              }
               return Number(val) < Number(rule.value);
-            case 'greater_equal':
+            }
+            case 'greater_equal': {
+              const ruleCol = dataset.columns.find((c) => c.key === rule.column);
+              if (ruleCol?.type === 'date' || ruleCol?.type === 'datetime') {
+                return Date.parse(String(val)) >= Date.parse(rule.value);
+              }
               return Number(val) >= Number(rule.value);
-            case 'less_equal':
+            }
+            case 'less_equal': {
+              const ruleCol = dataset.columns.find((c) => c.key === rule.column);
+              if (ruleCol?.type === 'date' || ruleCol?.type === 'datetime') {
+                return Date.parse(String(val)) <= Date.parse(rule.value);
+              }
               return Number(val) <= Number(rule.value);
+            }
             case 'is_empty':
               return val === null || val === undefined || String(val).trim() === '';
             case 'is_not_empty':
@@ -120,12 +143,31 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
     // 3. Sorting
     if (sortRule) {
       const { column, direction } = sortRule;
+      const targetCol = dataset.columns.find((c) => c.key === column);
+      const colType = targetCol?.type || 'string';
+
       rows = [...rows].sort((a, b) => {
         const valA = a[column];
         const valB = b[column];
 
         if (valA === null || valA === undefined) return 1;
         if (valB === null || valB === undefined) return -1;
+
+        if (colType === 'number' || colType === 'decimal' || colType === 'timestamp') {
+          const numA = Number(valA);
+          const numB = Number(valB);
+          if (!isNaN(numA) && !isNaN(numB)) {
+            return direction === 'asc' ? numA - numB : numB - numA;
+          }
+        }
+
+        if (colType === 'date' || colType === 'datetime') {
+          const timeA = Date.parse(String(valA));
+          const timeB = Date.parse(String(valB));
+          if (!isNaN(timeA) && !isNaN(timeB)) {
+            return direction === 'asc' ? timeA - timeB : timeB - timeA;
+          }
+        }
 
         if (typeof valA === 'number' && typeof valB === 'number') {
           return direction === 'asc' ? valA - valB : valB - valA;
@@ -198,18 +240,24 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
     switch (type) {
       case 'number':
         return <Hash className="w-3.5 h-3.5 text-emerald-500" />;
+      case 'decimal':
+        return <Calculator className="w-3.5 h-3.5 text-teal-500" />;
+      case 'datetime':
+        return <CalendarClock className="w-3.5 h-3.5 text-orange-500" />;
       case 'date':
         return <Calendar className="w-3.5 h-3.5 text-amber-500" />;
+      case 'timestamp':
+        return <Timer className="w-3.5 h-3.5 text-violet-500" />;
       case 'boolean':
         return <ToggleLeft className="w-3.5 h-3.5 text-purple-500" />;
       case 'string':
-        return <Type className="w-3.5 h-3.5 text-emerald-500" />;
+        return <Type className="w-3.5 h-3.5 text-blue-500" />;
       default:
         return <Database className="w-3.5 h-3.5 text-slate-400" />;
     }
   };
 
-  const renderCellContent = (val: any) => {
+  const renderCellContent = (val: any, type?: string) => {
     if (val === null || val === undefined || val === '') {
       return (
         <span className="text-slate-400 dark:text-slate-500 italic text-xs font-mono">
@@ -234,9 +282,45 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
         </span>
       );
     }
+    if (type === 'timestamp') {
+      const epoch = Number(val);
+      if (!isNaN(epoch) && epoch > 0) {
+        const ms = epoch > 1e11 ? epoch : epoch * 1000;
+        const formatted = new Date(ms).toISOString().replace('T', ' ').slice(0, 19);
+        return (
+          <div className="flex items-center gap-1.5 truncate" title={`Timestamp: ${val} (${new Date(ms).toUTCString()})`}>
+            <span className="font-mono text-xs text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/40 px-1.5 py-0.5 rounded border border-violet-200/60 dark:border-violet-800/60">
+              {formatted}
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono hidden xl:inline">({val})</span>
+          </div>
+        );
+      }
+    }
+    if (type === 'decimal') {
+      return (
+        <span className="font-mono text-teal-700 dark:text-teal-300 font-medium truncate block">
+          {String(val)}
+        </span>
+      );
+    }
+    if (type === 'datetime') {
+      return (
+        <span className="font-mono text-xs text-orange-700 dark:text-orange-300 truncate block" title={String(val)}>
+          {String(val).replace('T', ' ')}
+        </span>
+      );
+    }
+    if (type === 'date') {
+      return (
+        <span className="font-mono text-xs text-amber-700 dark:text-amber-300 truncate block">
+          {String(val)}
+        </span>
+      );
+    }
     if (typeof val === 'object') {
       return (
-        <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 truncate max-w-xs block border border-slate-200/60 dark:border-slate-700/60" title={JSON.stringify(val)}>
+        <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 truncate max-w-xs block border border-slate-200/60 dark:border-slate-700/60" title={JSON.stringify(val)}>
           {JSON.stringify(val)}
         </span>
       );
@@ -409,7 +493,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({ dataset, settings 
                           style={{ width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` }}
                           className={`${densityPadding} text-slate-800 dark:text-slate-200 border-r border-slate-100 dark:border-slate-800/60 truncate`}
                         >
-                          {renderCellContent(row[col.key])}
+                          {renderCellContent(row[col.key], col.type)}
                         </td>
                       );
                     })}

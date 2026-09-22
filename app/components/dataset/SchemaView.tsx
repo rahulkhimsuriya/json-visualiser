@@ -5,21 +5,39 @@ import {
   Type,
   ToggleLeft,
   Calendar,
+  CalendarClock,
+  Timer,
+  Calculator,
   AlertTriangle,
   Layers,
   Search,
   CheckCircle2,
   HelpCircle,
   Copy,
-  Check
+  Check,
+  ChevronDown
 } from 'lucide-react';
 import type { ColumnSchema, Dataset, FieldType } from '../../types/dataset';
+import { useWorkspace } from '../../context/WorkspaceContext';
 
 interface SchemaViewProps {
   dataset: Dataset;
 }
 
+const TYPE_OPTIONS: { type: FieldType; label: string }[] = [
+  { type: 'number', label: 'Number (Integer)' },
+  { type: 'decimal', label: 'Decimal' },
+  { type: 'datetime', label: 'DateTime' },
+  { type: 'date', label: 'Date' },
+  { type: 'timestamp', label: 'Timestamp (Unix)' },
+  { type: 'boolean', label: 'Boolean' },
+  { type: 'string', label: 'Text (String)' },
+  { type: 'object', label: 'Object' },
+  { type: 'array', label: 'Array' },
+];
+
 export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
+  const { updateColumnType } = useWorkspace();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -46,10 +64,28 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
             <Hash className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Number
           </span>
         );
+      case 'decimal':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/80 shadow-2xs">
+            <Calculator className="w-3 h-3 text-teal-600 dark:text-teal-400" /> Decimal
+          </span>
+        );
+      case 'datetime':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/80 dark:border-orange-800/80 shadow-2xs">
+            <CalendarClock className="w-3 h-3 text-orange-600 dark:text-orange-400" /> DateTime
+          </span>
+        );
       case 'date':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80 shadow-2xs">
             <Calendar className="w-3 h-3 text-amber-600 dark:text-amber-400" /> Date
+          </span>
+        );
+      case 'timestamp':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/80 shadow-2xs">
+            <Timer className="w-3 h-3 text-violet-600 dark:text-violet-400" /> Timestamp
           </span>
         );
       case 'boolean':
@@ -67,8 +103,8 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs">
-            <Type className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Text
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 shadow-2xs">
+            <Type className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Text
           </span>
         );
     }
@@ -126,8 +162,8 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 bg-slate-100/80 dark:bg-slate-800/70 p-1 rounded-xl">
-          {['all', 'number', 'string', 'boolean', 'date', 'object'].map((t) => (
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/80 dark:bg-slate-800/70 p-1 rounded-xl">
+          {['all', 'number', 'decimal', 'datetime', 'date', 'timestamp', 'string', 'boolean', 'object'].map((t) => (
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
@@ -137,7 +173,7 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              {t === 'string' ? 'Text' : t}
+              {t === 'string' ? 'Text' : t === 'datetime' ? 'DateTime' : t}
             </button>
           ))}
         </div>
@@ -185,7 +221,28 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
                     </td>
 
                     <td className="px-5 py-3.5">
-                      {renderTypeBadge(col.type)}
+                      <div className="relative inline-flex items-center group">
+                        <select
+                          value={col.type}
+                          onChange={(e) => updateColumnType(dataset.id, col.key, e.target.value as FieldType)}
+                          className="appearance-none bg-transparent cursor-pointer pl-0 pr-6 py-0.5 border-none focus:outline-none focus:ring-0 text-transparent absolute inset-0 w-full h-full z-10"
+                          title="Click to change or override column type"
+                        >
+                          {TYPE_OPTIONS.map((opt) => (
+                            <option
+                              key={opt.type}
+                              value={opt.type}
+                              className="text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 font-sans"
+                            >
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex items-center gap-1">
+                          {renderTypeBadge(col.type)}
+                          <ChevronDown className="w-3 h-3 text-slate-400 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
                     </td>
 
                     <td className="px-5 py-3.5">
@@ -212,10 +269,37 @@ export const SchemaView: React.FC<SchemaViewProps> = ({ dataset }) => {
 
                     <td className="px-5 py-3.5 font-mono text-xs text-slate-600 dark:text-slate-400">
                       {col.min !== undefined || col.max !== undefined ? (
-                        <div className="space-y-0.5">
-                          <div>min: <span className="font-semibold text-slate-800 dark:text-slate-200">{String(col.min)}</span></div>
-                          <div>max: <span className="font-semibold text-slate-800 dark:text-slate-200">{String(col.max)}</span></div>
-                        </div>
+                        col.type === 'timestamp' ? (
+                          <div className="space-y-0.5">
+                            <div title={`Epoch: ${col.min}`}>
+                              min:{' '}
+                              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                                {(() => {
+                                  const epoch = Number(col.min);
+                                  if (isNaN(epoch)) return String(col.min);
+                                  const ms = epoch > 1e11 ? epoch : epoch * 1000;
+                                  return new Date(ms).toISOString().replace('T', ' ').slice(0, 19);
+                                })()}
+                              </span>
+                            </div>
+                            <div title={`Epoch: ${col.max}`}>
+                              max:{' '}
+                              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                                {(() => {
+                                  const epoch = Number(col.max);
+                                  if (isNaN(epoch)) return String(col.max);
+                                  const ms = epoch > 1e11 ? epoch : epoch * 1000;
+                                  return new Date(ms).toISOString().replace('T', ' ').slice(0, 19);
+                                })()}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-0.5">
+                            <div>min: <span className="font-semibold text-slate-800 dark:text-slate-200">{String(col.min)}</span></div>
+                            <div>max: <span className="font-semibold text-slate-800 dark:text-slate-200">{String(col.max)}</span></div>
+                          </div>
+                        )
                       ) : (
                         <span className="text-slate-400">-</span>
                       )}

@@ -1,4 +1,14 @@
-export type FieldType = 'number' | 'string' | 'boolean' | 'date' | 'object' | 'array' | 'null';
+export type FieldType =
+  | 'number'
+  | 'decimal'
+  | 'date'
+  | 'datetime'
+  | 'timestamp'
+  | 'boolean'
+  | 'string'
+  | 'object'
+  | 'array'
+  | 'null';
 
 export interface ColumnSchema {
   key: string;
