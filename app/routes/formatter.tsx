@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import {
   UploadCloud,
   Sparkles,
@@ -17,23 +17,23 @@ import {
   ChevronsDown,
   ChevronsUp,
   CloudUpload,
-} from 'lucide-react'
-import type { Route } from './+types/formatter'
+} from 'lucide-react';
+import type { Route } from './+types/formatter';
 import {
   validateJsonString,
   formatJson,
   minifyJson,
   processJsonToDataset,
   type ParseErrorDetails,
-} from '../lib/json-processor'
-import { useWorkspace } from '../context/WorkspaceContext'
+} from '../lib/json-processor';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 interface JsonTreeNodeProps {
-  value: unknown
-  label?: string | number
-  depth?: number
-  initiallyExpanded?: boolean
-  expandedByDefaultDepth?: number
+  value: unknown;
+  label?: string | number;
+  depth?: number;
+  initiallyExpanded?: boolean;
+  expandedByDefaultDepth?: number;
 }
 
 function JsonTreeNode({
@@ -43,16 +43,13 @@ function JsonTreeNode({
   initiallyExpanded = false,
   expandedByDefaultDepth = 0,
 }: JsonTreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(
-    initiallyExpanded || expandedByDefaultDepth > 0,
-  )
-  const isArray = Array.isArray(value)
-  const isObject = value !== null && typeof value === 'object' && !isArray
-  const isContainer = isArray || isObject
+  const [isExpanded, setIsExpanded] = useState(initiallyExpanded || expandedByDefaultDepth > 0);
+  const isArray = Array.isArray(value);
+  const isObject = value !== null && typeof value === 'object' && !isArray;
+  const isContainer = isArray || isObject;
 
   if (!isContainer) {
-    const displayValue =
-      typeof value === 'string' ? JSON.stringify(value) : String(value)
+    const displayValue = typeof value === 'string' ? JSON.stringify(value) : String(value);
     const valueColor =
       value === null
         ? 'text-slate-400'
@@ -60,7 +57,7 @@ function JsonTreeNode({
           ? 'text-emerald-600 dark:text-emerald-300'
           : typeof value === 'number'
             ? 'text-sky-600 dark:text-sky-300'
-            : 'text-violet-600 dark:text-violet-300'
+            : 'text-violet-600 dark:text-violet-300';
 
     return (
       <div
@@ -73,15 +70,13 @@ function JsonTreeNode({
         )}
         <span className={valueColor}>{displayValue}</span>
       </div>
-    )
+    );
   }
 
   const entries = isArray
     ? value.map((item, index) => [index, item] as const)
-    : Object.entries(value as Record<string, unknown>)
-  const containerLabel = isArray
-    ? `Array [${entries.length}]`
-    : `Object {${entries.length}}`
+    : Object.entries(value as Record<string, unknown>);
+  const containerLabel = isArray ? `Array [${entries.length}]` : `Object {${entries.length}}`;
 
   return (
     <div role="treeitem" aria-expanded={isExpanded}>
@@ -97,12 +92,8 @@ function JsonTreeNode({
         ) : (
           <ChevronRight className="h-3.5 w-3.5 shrink-0 text-slate-500" />
         )}
-        {label !== undefined && (
-          <span className="text-slate-500 dark:text-slate-400">{label}</span>
-        )}
-        <span className="text-slate-800 dark:text-slate-100">
-          {containerLabel}
-        </span>
+        {label !== undefined && <span className="text-slate-500 dark:text-slate-400">{label}</span>}
+        <span className="text-slate-800 dark:text-slate-100">{containerLabel}</span>
       </button>
 
       {isExpanded && (
@@ -119,14 +110,13 @@ function JsonTreeNode({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function meta({}: Route.MetaArgs) {
   return [
     {
-      title:
-        'JSON Formatter & Minifier — Prettify, Compact & Validate JSON Locally',
+      title: 'JSON Formatter & Minifier — Prettify, Compact & Validate JSON Locally',
     },
     {
       name: 'description',
@@ -143,239 +133,229 @@ export function meta({}: Route.MetaArgs) {
       rel: 'canonical',
       href: 'https://jsonvisualiser.com/formatter',
     },
-  ]
+  ];
 }
 
 export default function FormatterPage() {
-  const { addDataset } = useWorkspace()
-  const navigate = useNavigate()
+  const { addDataset } = useWorkspace();
+  const navigate = useNavigate();
 
-  const [inputJson, setInputJson] = useState('')
-  const [outputJson, setOutputJson] = useState('')
-  const [activeMode, setActiveMode] = useState<'prettify' | 'minify'>(
-    'prettify',
-  )
-  const [indentSize, setIndentSize] = useState<number>(2)
-  const [fileName, setFileName] = useState<string>('data.json')
-  const [validationError, setValidationError] =
-    useState<ParseErrorDetails | null>(null)
-  const [leftCopied, setLeftCopied] = useState(false)
-  const [rightCopied, setRightCopied] = useState(false)
-  const [isProcessingWorkspace, setIsProcessingWorkspace] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [treeExpansionDepth, setTreeExpansionDepth] = useState(1)
-  const [treeRenderKey, setTreeRenderKey] = useState(0)
+  const [inputJson, setInputJson] = useState('');
+  const [outputJson, setOutputJson] = useState('');
+  const [activeMode, setActiveMode] = useState<'prettify' | 'minify'>('prettify');
+  const [indentSize, setIndentSize] = useState<number>(2);
+  const [fileName, setFileName] = useState<string>('data.json');
+  const [validationError, setValidationError] = useState<ParseErrorDetails | null>(null);
+  const [leftCopied, setLeftCopied] = useState(false);
+  const [rightCopied, setRightCopied] = useState(false);
+  const [isProcessingWorkspace, setIsProcessingWorkspace] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [treeExpansionDepth, setTreeExpansionDepth] = useState(1);
+  const [treeRenderKey, setTreeRenderKey] = useState(0);
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const dragCounterRef = useRef(0)
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragCounterRef = useRef(0);
 
   // Auto-sync: left changes automatically reflect on right
   useEffect(() => {
     if (!inputJson.trim()) {
-      setOutputJson('')
-      setValidationError(null)
-      return
+      setOutputJson('');
+      setValidationError(null);
+      return;
     }
-    const validation = validateJsonString(inputJson)
+    const validation = validateJsonString(inputJson);
     if (!validation.isValid) {
-      setValidationError(validation.error || { message: 'Invalid JSON' })
-      return
+      setValidationError(validation.error || { message: 'Invalid JSON' });
+      return;
     }
-    setValidationError(null)
+    setValidationError(null);
     try {
       if (activeMode === 'minify') {
-        setOutputJson(minifyJson(inputJson))
+        setOutputJson(minifyJson(inputJson));
       } else {
-        setOutputJson(formatJson(inputJson, indentSize))
+        setOutputJson(formatJson(inputJson, indentSize));
       }
     } catch {
-      const val = validateJsonString(inputJson)
-      if (!val.isValid) setValidationError(val.error || null)
+      const val = validateJsonString(inputJson);
+      if (!val.isValid) setValidationError(val.error || null);
     }
-  }, [inputJson, indentSize, activeMode])
+  }, [inputJson, indentSize, activeMode]);
 
   // File Upload
   const handleFileUpload = (file: File) => {
-    if (!file) return
-    setFileName(file.name)
-    const reader = new FileReader()
+    if (!file) return;
+    setFileName(file.name);
+    const reader = new FileReader();
     reader.onload = (e) => {
-      const content = (e.target?.result as string) || ''
-      setInputJson(content)
-      setValidationError(null)
-    }
-    reader.readAsText(file)
-  }
+      const content = (e.target?.result as string) || '';
+      setInputJson(content);
+      setValidationError(null);
+    };
+    reader.readAsText(file);
+  };
 
   const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault()
-    dragCounterRef.current += 1
+    e.preventDefault();
+    dragCounterRef.current += 1;
     if (e.dataTransfer.types.includes('Files')) {
-      setIsDragging(true)
+      setIsDragging(true);
     }
-  }
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-  }
+    e.preventDefault();
+  };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    dragCounterRef.current -= 1
+    e.preventDefault();
+    dragCounterRef.current -= 1;
     if (dragCounterRef.current <= 0) {
-      dragCounterRef.current = 0
-      setIsDragging(false)
+      dragCounterRef.current = 0;
+      setIsDragging(false);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    dragCounterRef.current = 0
-    setIsDragging(false)
+    e.preventDefault();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileUpload(e.dataTransfer.files[0])
+      handleFileUpload(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   // Prettify - formats left-side data
   const handlePrettify = () => {
-    if (!inputJson.trim()) return
+    if (!inputJson.trim()) return;
     try {
-      const formatted = formatJson(inputJson, indentSize)
-      setInputJson(formatted)
-      setActiveMode('prettify')
-      setValidationError(null)
+      const formatted = formatJson(inputJson, indentSize);
+      setInputJson(formatted);
+      setActiveMode('prettify');
+      setValidationError(null);
     } catch {
-      const val = validateJsonString(inputJson)
+      const val = validateJsonString(inputJson);
       if (!val.isValid && val.error) {
-        setValidationError(val.error)
+        setValidationError(val.error);
       }
     }
-  }
+  };
 
   // Minify - formats left-side data
   const handleMinify = () => {
-    if (!inputJson.trim()) return
+    if (!inputJson.trim()) return;
     try {
-      const minified = minifyJson(inputJson)
-      setInputJson(minified)
-      setActiveMode('minify')
-      setValidationError(null)
+      const minified = minifyJson(inputJson);
+      setInputJson(minified);
+      setActiveMode('minify');
+      setValidationError(null);
     } catch {
-      const val = validateJsonString(inputJson)
+      const val = validateJsonString(inputJson);
       if (!val.isValid && val.error) {
-        setValidationError(val.error)
+        setValidationError(val.error);
       }
     }
-  }
+  };
 
   // Copy Left (Raw Input)
   const handleCopyLeft = async () => {
-    if (!inputJson.trim()) return
+    if (!inputJson.trim()) return;
     try {
-      await navigator.clipboard.writeText(inputJson)
-      setLeftCopied(true)
-      setTimeout(() => setLeftCopied(false), 2000)
+      await navigator.clipboard.writeText(inputJson);
+      setLeftCopied(true);
+      setTimeout(() => setLeftCopied(false), 2000);
     } catch (err) {
       // ignore
     }
-  }
+  };
 
   // Copy Right (Formatted/Minified Output)
   const handleCopyRight = async () => {
-    const text = outputJson || inputJson
-    if (!text.trim()) return
+    const text = outputJson || inputJson;
+    if (!text.trim()) return;
     try {
-      await navigator.clipboard.writeText(text)
-      setRightCopied(true)
-      setTimeout(() => setRightCopied(false), 2000)
+      await navigator.clipboard.writeText(text);
+      setRightCopied(true);
+      setTimeout(() => setRightCopied(false), 2000);
     } catch (err) {
       // ignore
     }
-  }
+  };
 
   // Download Output
   const handleDownload = () => {
-    const content = outputJson || inputJson
-    if (!content.trim()) return
-    const blob = new Blob([content], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName ? `formatted-${fileName}` : 'formatted.json'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
+    const content = outputJson || inputJson;
+    if (!content.trim()) return;
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName ? `formatted-${fileName}` : 'formatted.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   // Send to Workspace Table
   const handleOpenInWorkspace = async () => {
-    const contentToProcess = outputJson || inputJson
-    if (!contentToProcess.trim()) return
+    const contentToProcess = outputJson || inputJson;
+    if (!contentToProcess.trim()) return;
 
-    const val = validateJsonString(contentToProcess)
+    const val = validateJsonString(contentToProcess);
     if (!val.isValid) {
-      setValidationError(val.error || { message: 'Invalid JSON' })
-      return
+      setValidationError(val.error || { message: 'Invalid JSON' });
+      return;
     }
 
-    setIsProcessingWorkspace(true)
+    setIsProcessingWorkspace(true);
     try {
-      const dataset = await processJsonToDataset(
-        contentToProcess,
-        fileName.trim() || 'data.json',
-      )
-      await addDataset(dataset)
-      setIsProcessingWorkspace(false)
-      navigate('/workspace/data')
+      const dataset = await processJsonToDataset(contentToProcess, fileName.trim() || 'data.json');
+      await addDataset(dataset);
+      setIsProcessingWorkspace(false);
+      navigate('/workspace/data');
     } catch (err: any) {
-      setIsProcessingWorkspace(false)
+      setIsProcessingWorkspace(false);
       setValidationError({
         message: `Workspace conversion failed: ${err?.message || 'Unable to tabularize JSON.'}`,
-        suggestion:
-          'Make sure your JSON is an array of objects or structured records.',
-      })
+        suggestion: 'Make sure your JSON is an array of objects or structured records.',
+      });
     }
-  }
+  };
 
   // Stats
-  const inputSize = new Blob([inputJson]).size
-  const outputSize = new Blob([outputJson]).size
-  const inputLines = inputJson ? inputJson.split('\n').length : 0
-  const outputLines = outputJson ? outputJson.split('\n').length : 0
+  const inputSize = new Blob([inputJson]).size;
+  const outputSize = new Blob([outputJson]).size;
+  const inputLines = inputJson ? inputJson.split('\n').length : 0;
+  const outputLines = outputJson ? outputJson.split('\n').length : 0;
   const compressionRatio =
     inputSize > 0 && outputSize > 0
       ? Math.round(((inputSize - outputSize) / inputSize) * 100)
-      : null
+      : null;
   const getItemCount = (json: string): number | null => {
-    if (!json.trim()) return 0
+    if (!json.trim()) return 0;
     try {
-      const parsed: unknown = JSON.parse(json)
-      if (Array.isArray(parsed)) return parsed.length
+      const parsed: unknown = JSON.parse(json);
+      if (Array.isArray(parsed)) return parsed.length;
       if (parsed !== null && typeof parsed === 'object') {
-        const object = parsed as Record<string, unknown>
-        const arrayKeys = Object.keys(object).filter((key) =>
-          Array.isArray(object[key]),
-        )
-        if (arrayKeys.length === 1)
-          return (object[arrayKeys[0]] as unknown[]).length
+        const object = parsed as Record<string, unknown>;
+        const arrayKeys = Object.keys(object).filter((key) => Array.isArray(object[key]));
+        if (arrayKeys.length === 1) return (object[arrayKeys[0]] as unknown[]).length;
       }
-      return 1
+      return 1;
     } catch {
-      return null
+      return null;
     }
-  }
-  const inputItemCount = useMemo(() => getItemCount(inputJson), [inputJson])
-  const outputItemCount = useMemo(() => getItemCount(outputJson), [outputJson])
+  };
+  const inputItemCount = useMemo(() => getItemCount(inputJson), [inputJson]);
+  const outputItemCount = useMemo(() => getItemCount(outputJson), [outputJson]);
   const parsedOutput = useMemo<unknown | undefined>(() => {
-    if (!outputJson.trim()) return undefined
+    if (!outputJson.trim()) return undefined;
     try {
-      return JSON.parse(outputJson)
+      return JSON.parse(outputJson);
     } catch {
-      return undefined
+      return undefined;
     }
-  }, [outputJson])
+  }, [outputJson]);
 
   return (
     <div className="flex-1 flex flex-col min-h-0 max-w-7xl w-full mx-auto px-4 sm:px-6 py-4 lg:py-6 space-y-4">
@@ -386,7 +366,7 @@ export default function FormatterPage() {
         accept=".json,.jsonl,.txt"
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) {
-            handleFileUpload(e.target.files[0])
+            handleFileUpload(e.target.files[0]);
           }
         }}
         className="hidden"
@@ -423,8 +403,8 @@ export default function FormatterPage() {
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
             <button
               onClick={() => {
-                setIndentSize(2)
-                setActiveMode('prettify')
+                setIndentSize(2);
+                setActiveMode('prettify');
               }}
               className={`px-2 py-1 text-[11px] font-semibold rounded-md transition-colors cursor-pointer ${
                 indentSize === 2
@@ -436,8 +416,8 @@ export default function FormatterPage() {
             </button>
             <button
               onClick={() => {
-                setIndentSize(4)
-                setActiveMode('prettify')
+                setIndentSize(4);
+                setActiveMode('prettify');
               }}
               className={`px-2 py-1 text-[11px] font-semibold rounded-md transition-colors cursor-pointer ${
                 indentSize === 4
@@ -505,11 +485,7 @@ export default function FormatterPage() {
 
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 font-mono whitespace-nowrap">
-                <span>
-                  {inputItemCount === null
-                    ? 'Invalid JSON'
-                    : `${inputItemCount} items`}
-                </span>
+                <span>{inputItemCount === null ? 'Invalid JSON' : `${inputItemCount} items`}</span>
                 <span>•</span>
                 <span>{inputLines} lines</span>
                 <span>•</span>
@@ -541,9 +517,7 @@ export default function FormatterPage() {
                 disabled={!inputJson.trim()}
                 className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Copy raw input JSON to clipboard"
-                aria-label={
-                  leftCopied ? 'Raw JSON copied' : 'Copy raw input JSON'
-                }
+                aria-label={leftCopied ? 'Raw JSON copied' : 'Copy raw input JSON'}
               >
                 {leftCopied ? (
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -559,8 +533,8 @@ export default function FormatterPage() {
             <textarea
               value={inputJson}
               onChange={(e) => {
-                setInputJson(e.target.value)
-                if (validationError) setValidationError(null)
+                setInputJson(e.target.value);
+                if (validationError) setValidationError(null);
               }}
               placeholder={`// 1. Paste raw JSON here, or\n// 2. Click "Upload JSON File" above, or\n// 3. Drag and drop a .json file directly into this area.\n\n{\n  "name": "JSON Visualiser",\n  "offline": true\n}`}
               spellCheck={false}
@@ -595,9 +569,7 @@ export default function FormatterPage() {
                   </span>
                 )}
                 <span>
-                  {outputItemCount === null
-                    ? 'Invalid JSON'
-                    : `${outputItemCount} items`}
+                  {outputItemCount === null ? 'Invalid JSON' : `${outputItemCount} items`}
                 </span>
                 <span>•</span>
                 <span>{outputLines} lines</span>
@@ -607,8 +579,8 @@ export default function FormatterPage() {
 
               <button
                 onClick={() => {
-                  setTreeExpansionDepth(Number.MAX_SAFE_INTEGER)
-                  setTreeRenderKey((key) => key + 1)
+                  setTreeExpansionDepth(Number.MAX_SAFE_INTEGER);
+                  setTreeRenderKey((key) => key + 1);
                 }}
                 disabled={parsedOutput === undefined}
                 className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
@@ -619,8 +591,8 @@ export default function FormatterPage() {
               </button>
               <button
                 onClick={() => {
-                  setTreeExpansionDepth(0)
-                  setTreeRenderKey((key) => key + 1)
+                  setTreeExpansionDepth(0);
+                  setTreeRenderKey((key) => key + 1);
                 }}
                 disabled={parsedOutput === undefined}
                 className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
@@ -643,11 +615,7 @@ export default function FormatterPage() {
                 disabled={!outputJson && !inputJson}
                 className="inline-flex items-center justify-center p-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
                 title="Copy formatted output to clipboard"
-                aria-label={
-                  rightCopied
-                    ? 'Formatted JSON copied'
-                    : 'Copy formatted output JSON'
-                }
+                aria-label={rightCopied ? 'Formatted JSON copied' : 'Copy formatted output JSON'}
               >
                 {rightCopied ? (
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -667,11 +635,7 @@ export default function FormatterPage() {
                 // Use Minify / Prettify on the left to toggle formatting.
               </p>
             ) : (
-              <div
-                role="tree"
-                aria-label="Formatted JSON structure"
-                className="min-w-max"
-              >
+              <div role="tree" aria-label="Formatted JSON structure" className="min-w-max">
                 <JsonTreeNode
                   key={treeRenderKey}
                   value={parsedOutput}
@@ -683,5 +647,5 @@ export default function FormatterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

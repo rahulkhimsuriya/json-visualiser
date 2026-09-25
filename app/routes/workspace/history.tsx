@@ -8,8 +8,8 @@ import type { QueryHistoryItem } from '../../types/query';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Query History — JSON Visualiser" },
-    { name: "description", content: "Review and re-run past SQL queries executed locally." },
+    { title: 'Query History — JSON Visualiser' },
+    { name: 'description', content: 'Review and re-run past SQL queries executed locally.' },
   ];
 }
 
@@ -61,9 +61,7 @@ export default function WorkspaceHistoryPage() {
             <History className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-              Query History
-            </h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Query History</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               {queryHistory.length} total executions logged locally in your browser
             </p>

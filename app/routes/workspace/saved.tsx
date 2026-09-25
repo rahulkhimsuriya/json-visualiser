@@ -8,18 +8,13 @@ import type { SavedQuery } from '../../types/query';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Saved Queries — JSON Visualiser" },
-    { name: "description", content: "Manage and run your saved SQL query bookmarks." },
+    { title: 'Saved Queries — JSON Visualiser' },
+    { name: 'description', content: 'Manage and run your saved SQL query bookmarks.' },
   ];
 }
 
 export default function WorkspaceSavedPage() {
-  const {
-    savedQueries,
-    updateSavedQuery,
-    deleteSavedQuery,
-    duplicateSavedQuery,
-  } = useWorkspace();
+  const { savedQueries, updateSavedQuery, deleteSavedQuery, duplicateSavedQuery } = useWorkspace();
 
   const navigate = useNavigate();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,11 +56,10 @@ export default function WorkspaceSavedPage() {
             <Bookmark className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-              Saved Queries
-            </h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Saved Queries</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {savedQueries.length} query {savedQueries.length === 1 ? 'bookmark' : 'bookmarks'} saved in browser storage
+              {savedQueries.length} query {savedQueries.length === 1 ? 'bookmark' : 'bookmarks'}{' '}
+              saved in browser storage
             </p>
           </div>
         </div>

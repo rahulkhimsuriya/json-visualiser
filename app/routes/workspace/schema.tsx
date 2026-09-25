@@ -5,8 +5,11 @@ import { SchemaView } from '../../components/dataset/SchemaView';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Schema Inspector — JSON Visualiser" },
-    { name: "description", content: "Inspect field types, nullability, unique counts, and sample values." },
+    { title: 'Schema Inspector — JSON Visualiser' },
+    {
+      name: 'description',
+      content: 'Inspect field types, nullability, unique counts, and sample values.',
+    },
   ];
 }
 

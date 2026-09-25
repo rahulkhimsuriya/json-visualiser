@@ -29,107 +29,110 @@ import { PRESET_DATASETS, SAMPLE_USERS, type SampleDatasetPreset } from '../lib/
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "JSON Visualiser — Query JSON with SQL & Interactive Tables Locally" },
+    { title: 'JSON Visualiser — Query JSON with SQL & Interactive Tables Locally' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Free, privacy-first in-browser JSON visualizer. Transform raw JSON into interactive tables, inspect schemas, and run SQL queries locally with zero server uploads.",
+        'Free, privacy-first in-browser JSON visualizer. Transform raw JSON into interactive tables, inspect schemas, and run SQL queries locally with zero server uploads.',
     },
     {
-      name: "keywords",
+      name: 'keywords',
       content:
-        "json visualizer, query json with sql, json to table, offline json viewer, json schema inspector, alasql in browser, privacy json formatter, json to csv converter, local data analysis",
+        'json visualizer, query json with sql, json to table, offline json viewer, json schema inspector, alasql in browser, privacy json formatter, json to csv converter, local data analysis',
     },
-    { name: "robots", content: "index, follow" },
-    { property: "og:type", content: "website" },
-    { property: "og:site_name", content: "JSON Visualiser" },
-    { property: "og:title", content: "JSON Visualiser — Query JSON with SQL & Interactive Tables Locally" },
+    { name: 'robots', content: 'index, follow' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'JSON Visualiser' },
     {
-      property: "og:description",
-      content:
-        "Transform raw JSON into interactive tables, inspect schemas, and run SQL queries locally with zero server uploads.",
+      property: 'og:title',
+      content: 'JSON Visualiser — Query JSON with SQL & Interactive Tables Locally',
     },
-    { property: "og:url", content: "https://jsonvisualiser.com/" },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: "JSON Visualiser — In-Browser SQL & Table Tool for JSON" },
     {
-      name: "twitter:description",
+      property: 'og:description',
       content:
-        "Transform raw JSON into interactive tables, inspect schemas, and execute SQL queries in your browser. 100% client-side privacy.",
+        'Transform raw JSON into interactive tables, inspect schemas, and run SQL queries locally with zero server uploads.',
     },
-    { tagName: "link", rel: "canonical", href: "https://jsonvisualiser.com/" },
+    { property: 'og:url', content: 'https://jsonvisualiser.com/' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'JSON Visualiser — In-Browser SQL & Table Tool for JSON' },
+    {
+      name: 'twitter:description',
+      content:
+        'Transform raw JSON into interactive tables, inspect schemas, and execute SQL queries in your browser. 100% client-side privacy.',
+    },
+    { tagName: 'link', rel: 'canonical', href: 'https://jsonvisualiser.com/' },
   ];
 }
 
 const FAQS = [
   {
-    question: "How does in-browser SQL querying work on JSON files?",
+    question: 'How does in-browser SQL querying work on JSON files?',
     answer:
       "JSON Visualiser embeds AlaSQL, an in-memory SQL database engine executing directly in your browser's JavaScript runtime. It normalizes parsed JSON objects into relational tables, allowing you to run standard SQL queries including SELECT, WHERE, GROUP BY, aggregations (SUM, AVG, COUNT), and multi-dataset JOINs with sub-millisecond execution times without needing any backend server.",
   },
   {
-    question: "Is my JSON data private and secure?",
+    question: 'Is my JSON data private and secure?',
     answer:
-      "Yes, 100% private. JSON Visualiser runs entirely client-side in your browser. Your JSON datasets are never uploaded to any remote server, cloud API, or third-party analytics service. It is safe for sensitive API tokens, production database dumps, and GDPR/HIPAA-regulated records.",
+      'Yes, 100% private. JSON Visualiser runs entirely client-side in your browser. Your JSON datasets are never uploaded to any remote server, cloud API, or third-party analytics service. It is safe for sensitive API tokens, production database dumps, and GDPR/HIPAA-regulated records.',
   },
   {
-    question: "What JSON structures are supported?",
+    question: 'What JSON structures are supported?',
     answer:
-      "You can paste, drop, or import standard JSON arrays of objects, nested JSON hierarchies, key-value maps, or raw API response payloads. The app automatically inspects schemas, flattens nested properties into column paths, and presents clean spreadsheet tables.",
+      'You can paste, drop, or import standard JSON arrays of objects, nested JSON hierarchies, key-value maps, or raw API response payloads. The app automatically inspects schemas, flattens nested properties into column paths, and presents clean spreadsheet tables.',
   },
   {
-    question: "What is the file size limit for importing JSON?",
+    question: 'What is the file size limit for importing JSON?',
     answer:
       "Since processing happens locally, capacity is determined by your device's memory. JSON Visualiser easily handles datasets with tens of thousands of records. Datasets persist client-side in IndexedDB, completely bypassing the standard 5MB browser localStorage limits.",
   },
   {
-    question: "Can I export data to CSV or formatted JSON?",
+    question: 'Can I export data to CSV or formatted JSON?',
     answer:
-      "Yes. You can export active tables, filtered views, or SQL query results with one click into standard CSV files or formatted JSON documents.",
+      'Yes. You can export active tables, filtered views, or SQL query results with one click into standard CSV files or formatted JSON documents.',
   },
   {
-    question: "Does JSON Visualiser work offline?",
+    question: 'Does JSON Visualiser work offline?',
     answer:
-      "Yes. Once loaded, JSON Visualiser functions entirely without an active internet connection. You can use it securely in air-gapped environments or while traveling.",
+      'Yes. Once loaded, JSON Visualiser functions entirely without an active internet connection. You can use it securely in air-gapped environments or while traveling.',
   },
 ];
 
 const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
+  '@context': 'https://schema.org',
+  '@graph': [
     {
-      "@type": "WebApplication",
-      "@id": "https://jsonvisualiser.com/#app",
-      "name": "JSON Visualiser",
-      "url": "https://jsonvisualiser.com/",
-      "description":
-        "Transform raw JSON into interactive tables, inspect schemas, and execute SQL queries locally in your browser with 100% client-side privacy.",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
+      '@type': 'WebApplication',
+      '@id': 'https://jsonvisualiser.com/#app',
+      name: 'JSON Visualiser',
+      url: 'https://jsonvisualiser.com/',
+      description:
+        'Transform raw JSON into interactive tables, inspect schemas, and execute SQL queries locally in your browser with 100% client-side privacy.',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'All',
+      browserRequirements: 'Requires JavaScript. Requires HTML5.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
       },
-      "featureList": [
-        "In-browser SQL engine powered by AlaSQL",
-        "Interactive spreadsheet table with sorting and filtering",
-        "Automated schema inference and type detection",
-        "100% client-side execution with zero data transmission",
-        "IndexedDB persistent local storage",
-        "One-click export to CSV and JSON",
+      featureList: [
+        'In-browser SQL engine powered by AlaSQL',
+        'Interactive spreadsheet table with sorting and filtering',
+        'Automated schema inference and type detection',
+        '100% client-side execution with zero data transmission',
+        'IndexedDB persistent local storage',
+        'One-click export to CSV and JSON',
       ],
     },
     {
-      "@type": "FAQPage",
-      "@id": "https://jsonvisualiser.com/#faq",
-      "mainEntity": FAQS.map((faq) => ({
-        "@type": "Question",
-        "name": faq.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.answer,
+      '@type': 'FAQPage',
+      '@id': 'https://jsonvisualiser.com/#faq',
+      mainEntity: FAQS.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
         },
       })),
     },
@@ -242,13 +245,19 @@ export default function Landing() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16 space-y-16 sm:space-y-20">
       {/* Hero Section */}
-      <section aria-labelledby="landing-hero" className="text-center space-y-6 max-w-3xl mx-auto pt-2 sm:pt-4">
+      <section
+        aria-labelledby="landing-hero"
+        className="text-center space-y-6 max-w-3xl mx-auto pt-2 sm:pt-4"
+      >
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 text-xs font-semibold shadow-2xs">
           <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+          <ShieldCheck
+            className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+            aria-hidden="true"
+          />
           <span>100% Client-Side • Zero Data Ever Leaves Your Browser</span>
         </div>
 
@@ -264,8 +273,8 @@ export default function Landing() {
         </h1>
 
         <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-          Paste or drop raw JSON. Explore it in a high-speed spreadsheet, inspect auto-inferred schemas,
-          run real SQL with AlaSQL, and export to CSV — all locally, with total privacy.
+          Paste or drop raw JSON. Explore it in a high-speed spreadsheet, inspect auto-inferred
+          schemas, run real SQL with AlaSQL, and export to CSV — all locally, with total privacy.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
@@ -282,7 +291,10 @@ export default function Landing() {
               to="/workspace/data"
               className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-800/90 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs transition-all cursor-pointer"
             >
-              <Table className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+              <Table
+                className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+                aria-hidden="true"
+              />
               Open Workspace ({datasets.length} loaded)
             </Link>
           ) : (
@@ -316,7 +328,8 @@ export default function Landing() {
               See the transformation
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Raw nested JSON → flat table → SQL answer. This is a static preview — the real thing runs live in your browser.
+              Raw nested JSON → flat table → SQL answer. This is a static preview — the real thing
+              runs live in your browser.
             </p>
           </div>
           <Link
@@ -329,11 +342,16 @@ export default function Landing() {
 
         <div className="overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 shadow-sm">
           {/* Mock window chrome */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-slate-200/70 dark:border-slate-800/70 bg-slate-50/80 dark:bg-slate-950/40" aria-hidden="true">
+          <div
+            className="flex items-center gap-1.5 px-4 py-3 border-b border-slate-200/70 dark:border-slate-800/70 bg-slate-50/80 dark:bg-slate-950/40"
+            aria-hidden="true"
+          >
             <span className="w-2.5 h-2.5 rounded-full bg-rose-400/80" />
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
-            <span className="ml-3 font-mono text-[11px] text-slate-400 dark:text-slate-500">users.json → SQL → result.csv — local only</span>
+            <span className="ml-3 font-mono text-[11px] text-slate-400 dark:text-slate-500">
+              users.json → SQL → result.csv — local only
+            </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
@@ -364,9 +382,15 @@ export default function Landing() {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400">
-                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">name</th>
-                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">address.city</th>
-                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">role</th>
+                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">
+                        name
+                      </th>
+                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">
+                        address.city
+                      </th>
+                      <th scope="col" className="px-3 py-2 font-semibold whitespace-nowrap">
+                        role
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900/60 text-slate-700 dark:text-slate-200">
@@ -386,7 +410,11 @@ export default function Landing() {
               </div>
               <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
                 <Lock className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
-                Nested <code className="font-mono px-1 rounded bg-slate-200/70 dark:bg-slate-800">address.geo</code> auto-flattened. Nothing uploaded.
+                Nested{' '}
+                <code className="font-mono px-1 rounded bg-slate-200/70 dark:bg-slate-800">
+                  address.geo
+                </code>{' '}
+                auto-flattened. Nothing uploaded.
               </p>
             </div>
           </div>
@@ -399,15 +427,22 @@ export default function Landing() {
               key={stat.label}
               className="px-4 py-3.5 rounded-2xl bg-white dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/80 text-center shadow-2xs"
             >
-              <dt className="order-2 mt-1 block text-[11px] text-slate-500 dark:text-slate-400">{stat.label}</dt>
-              <dd className="order-1 text-lg font-black tracking-tight text-slate-900 dark:text-white">{stat.value}</dd>
+              <dt className="order-2 mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
+                {stat.label}
+              </dt>
+              <dd className="order-1 text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                {stat.value}
+              </dd>
             </div>
           ))}
         </dl>
       </section>
 
       {/* Primary Workflow */}
-      <section aria-labelledby="landing-workflow" className="relative overflow-hidden p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm">
+      <section
+        aria-labelledby="landing-workflow"
+        className="relative overflow-hidden p-6 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm"
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent"
@@ -417,12 +452,15 @@ export default function Landing() {
             <Zap className="w-3.5 h-3.5" aria-hidden="true" />
             How it works
           </p>
-          <h2 id="landing-workflow" className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h2
+            id="landing-workflow"
+            className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white"
+          >
             From raw JSON to answers in six steps
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            Every step runs locally in this tab — no upload, no queue, no backend.
-            Click any step to jump straight to that tool.
+            Every step runs locally in this tab — no upload, no queue, no backend. Click any step to
+            jump straight to that tool.
           </p>
         </div>
 
@@ -465,9 +503,7 @@ export default function Landing() {
                       Step {idx + 1}
                     </p>
                   </div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                    {item.title}
-                  </h3>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">{item.title}</h3>
                   <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
                     {item.desc}
                   </p>
@@ -485,7 +521,9 @@ export default function Landing() {
         <p className="mt-8 flex flex-wrap items-center justify-center gap-1.5 text-center text-xs text-slate-600 dark:text-slate-300">
           <ShieldCheck className="w-4 h-4 text-emerald-500" aria-hidden="true" />
           Paste → export in under 10 seconds.
-          <span className="font-semibold text-slate-800 dark:text-white">Everything stays in this tab.</span>
+          <span className="font-semibold text-slate-800 dark:text-white">
+            Everything stays in this tab.
+          </span>
         </p>
       </section>
 
@@ -493,7 +531,10 @@ export default function Landing() {
       <section aria-labelledby="landing-samples" className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h2 id="landing-samples" className="text-lg font-bold text-slate-900 dark:text-slate-100">
+            <h2
+              id="landing-samples"
+              className="text-lg font-bold text-slate-900 dark:text-slate-100"
+            >
               Quick-start datasets
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -541,7 +582,10 @@ export default function Landing() {
 
                 <span className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   <span>{isLoading ? 'Loading…' : 'Load into Workspace'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" aria-hidden="true" />
+                  <ArrowRight
+                    className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform"
+                    aria-hidden="true"
+                  />
                 </span>
               </button>
             );
@@ -556,7 +600,8 @@ export default function Landing() {
             Everything you need, one tab away
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Formatter, importer, SQL workbench, and virtualized tables share the same local workspace.
+            Formatter, importer, SQL workbench, and virtualized tables share the same local
+            workspace.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -574,9 +619,15 @@ export default function Landing() {
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                   {tool.title}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">{tool.desc}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                  {tool.desc}
+                </p>
                 <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  Open <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                  Open{' '}
+                  <ArrowRight
+                    className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                    aria-hidden="true"
+                  />
                 </span>
               </Link>
             );
@@ -592,14 +643,19 @@ export default function Landing() {
 
       {/* Feature Highlights Grid */}
       <section aria-labelledby="landing-features" className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <h2 id="landing-features" className="sr-only">Key features</h2>
+        <h2 id="landing-features" className="sr-only">
+          Key features
+        </h2>
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800/90 space-y-2.5 shadow-2xs">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50">
             <HardDrive className="w-5 h-5" aria-hidden="true" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">IndexedDB Storage</h3>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            IndexedDB Storage
+          </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Datasets persist safely on your device in IndexedDB across browser refreshes without localStorage quota limits.
+            Datasets persist safely on your device in IndexedDB across browser refreshes without
+            localStorage quota limits.
           </p>
         </div>
 
@@ -607,9 +663,12 @@ export default function Landing() {
           <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center border border-teal-100 dark:border-teal-900/50">
             <Terminal className="w-5 h-5" aria-hidden="true" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">In-Browser SQL Engine</h3>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            In-Browser SQL Engine
+          </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Execute SQL queries with multi-dataset JOINs, aggregations, and sub-millisecond execution times in memory.
+            Execute SQL queries with multi-dataset JOINs, aggregations, and sub-millisecond
+            execution times in memory.
           </p>
         </div>
 
@@ -617,52 +676,73 @@ export default function Landing() {
           <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50">
             <Lock className="w-5 h-5" aria-hidden="true" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Zero Server Transmission</h3>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            Zero Server Transmission
+          </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Your data is never transmitted to any remote server or third-party service. Works completely offline.
+            Your data is never transmitted to any remote server or third-party service. Works
+            completely offline.
           </p>
         </div>
       </section>
 
       {/* Security & Comparison Callout */}
-      <section aria-labelledby="landing-privacy" className="p-8 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-500/20 dark:border-emerald-500/30 space-y-6">
+      <section
+        aria-labelledby="landing-privacy"
+        className="p-8 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-500/20 dark:border-emerald-500/30 space-y-6"
+      >
         <div className="max-w-2xl space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
             Built For Sensitive Production Data
           </div>
-          <h2 id="landing-privacy" className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h2
+            id="landing-privacy"
+            className="text-2xl font-black text-slate-900 dark:text-white tracking-tight"
+          >
             Why developers choose local analysis over cloud formatters
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            Most online JSON viewers upload your payloads to remote servers for processing. JSON Visualiser runs 100% in your browser runtime — safe for credentials, enterprise APIs, and customer records.
+            Most online JSON viewers upload your payloads to remote servers for processing. JSON
+            Visualiser runs 100% in your browser runtime — safe for credentials, enterprise APIs,
+            and customer records.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             {
-              title: "Zero Network Exfiltration",
-              desc: "Payloads, tables, and query executions stay in your browser tab. Zero analytics, zero logging."
+              title: 'Zero Network Exfiltration',
+              desc: 'Payloads, tables, and query executions stay in your browser tab. Zero analytics, zero logging.',
             },
             {
-              title: "Relational SQL On Raw JSON",
-              desc: "Skip complex regex and write standard ANSI SQL queries across one or multiple loaded datasets."
+              title: 'Relational SQL On Raw JSON',
+              desc: 'Skip complex regex and write standard ANSI SQL queries across one or multiple loaded datasets.',
             },
             {
-              title: "Automatic Schema Detection",
-              desc: "Infers boolean, numeric, string, date, and nested objects with automatic flattening into spreadsheet rows."
+              title: 'Automatic Schema Detection',
+              desc: 'Infers boolean, numeric, string, date, and nested objects with automatic flattening into spreadsheet rows.',
             },
             {
-              title: "Offline & Air-Gapped Ready",
-              desc: "Runs smoothly without active WiFi or internet connection. Fully compliant with enterprise data protection."
-            }
+              title: 'Offline & Air-Gapped Ready',
+              desc: 'Runs smoothly without active WiFi or internet connection. Fully compliant with enterprise data protection.',
+            },
           ].map((item) => (
-            <div key={item.title} className="flex items-start gap-3 p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-emerald-200/50 dark:border-emerald-900/40">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" aria-hidden="true" />
+            <div
+              key={item.title}
+              className="flex items-start gap-3 p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-emerald-200/50 dark:border-emerald-900/40"
+            >
+              <CheckCircle2
+                className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
               <div>
-                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{item.title}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
+                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             </div>
           ))}
@@ -676,11 +756,15 @@ export default function Landing() {
             <HelpCircle className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
             <span>Search & Developer FAQ</span>
           </div>
-          <h2 id="landing-faq" className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h2
+            id="landing-faq"
+            className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white"
+          >
             Frequently Asked Questions
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Everything you need to know about in-browser JSON analysis, AlaSQL query execution, and data privacy.
+            Everything you need to know about in-browser JSON analysis, AlaSQL query execution, and
+            data privacy.
           </p>
         </div>
 
@@ -693,7 +777,10 @@ export default function Landing() {
             >
               <summary className="flex items-center justify-between font-semibold text-xs sm:text-sm text-slate-800 dark:text-slate-200 list-none cursor-pointer select-none">
                 <span>{faq.question}</span>
-                <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-2" aria-hidden="true" />
+                <ChevronDown
+                  className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-2"
+                  aria-hidden="true"
+                />
               </summary>
               <div className="pt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 mt-3">
                 {faq.answer}
@@ -704,17 +791,23 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section aria-labelledby="landing-cta" className="overflow-hidden rounded-3xl border border-emerald-500/25 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 px-6 py-10 sm:px-10 text-center text-white shadow-lg shadow-emerald-500/20">
+      <section
+        aria-labelledby="landing-cta"
+        className="overflow-hidden rounded-3xl border border-emerald-500/25 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 px-6 py-10 sm:px-10 text-center text-white shadow-lg shadow-emerald-500/20"
+      >
         <div className="mx-auto max-w-2xl space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-semibold backdrop-blur">
             <Database className="w-4 h-4" aria-hidden="true" />
-            {datasets.length > 0 ? `${datasets.length} dataset${datasets.length === 1 ? '' : 's'} ready in this browser` : 'No upload • No account • No tracking'}
+            {datasets.length > 0
+              ? `${datasets.length} dataset${datasets.length === 1 ? '' : 's'} ready in this browser`
+              : 'No upload • No account • No tracking'}
           </div>
           <h2 id="landing-cta" className="text-2xl sm:text-3xl font-black tracking-tight">
             Inspect your JSON without sending it anywhere
           </h2>
           <p className="text-sm text-emerald-50/90 leading-relaxed">
-            Format, flatten, query, and export — entirely on your device. Start with a sample or bring your own file.
+            Format, flatten, query, and export — entirely on your device. Start with a sample or
+            bring your own file.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
             <Link
@@ -750,8 +843,8 @@ export default function Landing() {
               </span>
             </Link>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
-              Privacy-first JSON toolkit — format, flatten, query with SQL, and export,
-              entirely in your browser.
+              Privacy-first JSON toolkit — format, flatten, query with SQL, and export, entirely in
+              your browser.
             </p>
             <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
@@ -765,22 +858,34 @@ export default function Landing() {
             </h3>
             <ul className="space-y-2.5 text-xs font-medium">
               <li>
-                <Link to="/formatter" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/formatter"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Formatter & Validator
                 </Link>
               </li>
               <li>
-                <Link to="/import" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/import"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Import JSON
                 </Link>
               </li>
               <li>
-                <Link to="/workspace/query" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/workspace/query"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   SQL Workbench
                 </Link>
               </li>
               <li>
-                <Link to="/workspace/data" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/workspace/data"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Spreadsheet View
                 </Link>
               </li>
@@ -793,22 +898,34 @@ export default function Landing() {
             </h3>
             <ul className="space-y-2.5 text-xs font-medium">
               <li>
-                <Link to="/workspace/schema" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/workspace/schema"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Schema Inspector
                 </Link>
               </li>
               <li>
-                <Link to="/workspace/saved" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/workspace/saved"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Saved Queries
                 </Link>
               </li>
               <li>
-                <Link to="/workspace/history" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/workspace/history"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Query History
                 </Link>
               </li>
               <li>
-                <Link to="/settings" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/settings"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Settings
                 </Link>
               </li>
@@ -821,22 +938,34 @@ export default function Landing() {
             </h3>
             <ul className="space-y-2.5 text-xs font-medium">
               <li>
-                <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/import" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/import"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Get Started
                 </Link>
               </li>
               <li>
-                <Link to="/formatter" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/formatter"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Format JSON
                 </Link>
               </li>
               <li>
-                <Link to="/settings" className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link
+                  to="/settings"
+                  className="text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
                   Storage & Privacy
                 </Link>
               </li>

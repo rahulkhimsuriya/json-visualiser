@@ -7,8 +7,8 @@ import type { QueryResult } from '../../types/query';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "SQL Query Studio — JSON Visualiser" },
-    { name: "description", content: "Query JSON datasets locally with AlaSQL." },
+    { title: 'SQL Query Studio — JSON Visualiser' },
+    { name: 'description', content: 'Query JSON datasets locally with AlaSQL.' },
   ];
 }
 

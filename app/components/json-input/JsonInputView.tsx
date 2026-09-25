@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react';
 import {
   UploadCloud,
   FileCode2,
@@ -12,7 +12,7 @@ import {
   Database,
   ArrowRight,
   HelpCircle,
-} from 'lucide-react'
+} from 'lucide-react';
 import {
   validateJsonString,
   parseJsonString,
@@ -20,37 +20,29 @@ import {
   minifyJson,
   processParsedJsonToDataset,
   type ParseErrorDetails,
-} from '../../lib/json-processor'
-import {
-  PRESET_DATASETS,
-  type SampleDatasetPreset,
-} from '../../lib/sample-data'
-import { ProgressBar } from '../common/ProgressBar'
-import type { Dataset } from '../../types/dataset'
+} from '../../lib/json-processor';
+import { PRESET_DATASETS, type SampleDatasetPreset } from '../../lib/sample-data';
+import { ProgressBar } from '../common/ProgressBar';
+import type { Dataset } from '../../types/dataset';
 
-const INLINE_EDITOR_FILE_LIMIT_BYTES = 2 * 1024 * 1024
-const JSON_EXAMPLE = `// 1. Paste raw JSON here, or
-// 2. Click "Upload JSON File" above, or
-// 3. Drag and drop a .json file directly into this area.
-
-[
-  {
-    "id": 1,
-    "name": "Rahul Khimsuriya",
-    "email": "rahul@example.com",
-    "role": "Admin",
-    "active": true,
-    "address": {
-      "city": "Ahmedabad",
-      "country": "India"
-    }
+const INLINE_EDITOR_FILE_LIMIT_BYTES = 2 * 1024 * 1024;
+const JSON_EXAMPLE = `{
+  "id": 1,
+  "name": "Rahul Khimsuriya",
+  "email": "me@rahulkhimsuriya.xyz",
+  "role": "Admin",
+  "active": true,
+  "address": {
+    "city": "Ahmedabad",
+    "country": "India"
   }
-]`
+}
+`;
 
 interface JsonInputViewProps {
-  onDatasetCreated: (dataset: Dataset) => void
-  onCancel?: () => void
-  canCancel?: boolean
+  onDatasetCreated: (dataset: Dataset) => void;
+  onCancel?: () => void;
+  canCancel?: boolean;
 }
 
 export const JsonInputView: React.FC<JsonInputViewProps> = ({
@@ -58,128 +50,127 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
   onCancel,
   canCancel = false,
 }) => {
-  const [jsonText, setJsonText] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [datasetName, setDatasetName] = useState('dataset.json')
-  const [isDragging, setIsDragging] = useState(false)
-  const [validationError, setValidationError] =
-    useState<ParseErrorDetails | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [progressMessage, setProgressMessage] = useState('')
-  const [copied, setCopied] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [jsonText, setJsonText] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [datasetName, setDatasetName] = useState('dataset.json');
+  const [isDragging, setIsDragging] = useState(false);
+  const [validationError, setValidationError] = useState<ParseErrorDetails | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressMessage, setProgressMessage] = useState('');
+  const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleTextChange = (text: string) => {
-    setJsonText(text)
-    setUploadedFile(null)
+    setJsonText(text);
+    setUploadedFile(null);
     if (validationError) {
-      setValidationError(null)
+      setValidationError(null);
     }
-  }
+  };
 
   const handleFileUpload = (file: File) => {
-    if (!file) return
-    setDatasetName(file.name)
-    setValidationError(null)
+    if (!file) return;
+    setDatasetName(file.name);
+    setValidationError(null);
 
     // Rendering a multi-megabyte JSON document in a controlled textarea causes
     // React and the browser to retain several copies of it. Keep large files out
     // of the editor and only read them when the user explicitly starts ingestion.
     if (file.size > INLINE_EDITOR_FILE_LIMIT_BYTES) {
-      setJsonText('')
-      setUploadedFile(file)
-      return
+      setJsonText('');
+      setUploadedFile(file);
+      return;
     }
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onerror = () => {
       setValidationError({
         message: `Could not read ${file.name}. Please try selecting it again.`,
-      })
-    }
+      });
+    };
     reader.onload = (e) => {
-      const content = e.target?.result as string
-      setJsonText(content || '')
-      setUploadedFile(null)
-    }
-    reader.readAsText(file)
-  }
+      const content = e.target?.result as string;
+      setJsonText(content || '');
+      setUploadedFile(null);
+    };
+    reader.readAsText(file);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
+    e.preventDefault();
+    setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileUpload(e.dataTransfer.files[0])
+      handleFileUpload(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   const handleFormat = () => {
     try {
-      const formatted = formatJson(jsonText)
-      setJsonText(formatted)
-      setValidationError(null)
+      const formatted = formatJson(jsonText);
+      setJsonText(formatted);
+      setValidationError(null);
     } catch (err) {
-      const val = validateJsonString(jsonText)
+      const val = validateJsonString(jsonText);
       if (!val.isValid && val.error) {
-        setValidationError(val.error)
+        setValidationError(val.error);
       }
     }
-  }
+  };
 
   const handleMinify = () => {
     try {
-      const minified = minifyJson(jsonText)
-      setJsonText(minified)
-      setValidationError(null)
+      const minified = minifyJson(jsonText);
+      setJsonText(minified);
+      setValidationError(null);
     } catch (err) {
-      const val = validateJsonString(jsonText)
+      const val = validateJsonString(jsonText);
       if (!val.isValid && val.error) {
-        setValidationError(val.error)
+        setValidationError(val.error);
       }
     }
-  }
+  };
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(jsonText)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(jsonText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // ignore
     }
-  }
+  };
 
   const handleClear = () => {
-    setJsonText('')
-    setUploadedFile(null)
-    setValidationError(null)
-  }
+    setJsonText('');
+    setUploadedFile(null);
+    setValidationError(null);
+  };
 
   const handleLoadPreset = (preset: SampleDatasetPreset) => {
-    const raw = JSON.stringify(preset.data, null, 2)
-    setJsonText(raw)
-    setUploadedFile(null)
-    setDatasetName(preset.filename)
-    setValidationError(null)
-  }
+    const raw = JSON.stringify(preset.data, null, 2);
+    setJsonText(raw);
+    setUploadedFile(null);
+    setDatasetName(preset.filename);
+    setValidationError(null);
+  };
 
   const handleProcess = async () => {
-    setValidationError(null)
-    setIsProcessing(true)
-    setProgress(5)
+    setValidationError(null);
+    setIsProcessing(true);
+    setProgress(5);
     setProgressMessage(
       uploadedFile
         ? `Reading ${uploadedFile.name} locally...`
-        : 'Starting in-browser JSON analysis...',
-    )
+        : 'Starting in-browser JSON analysis...'
+    );
 
     try {
-      const rawJson = uploadedFile ? await uploadedFile.text() : jsonText
-      const parsed = parseJsonString(rawJson)
+      const rawJson = uploadedFile ? await uploadedFile.text() : jsonText;
+      const parsed = parseJsonString(rawJson);
       if (!parsed.isValid) {
-        setValidationError(parsed.error)
-        return
+        setValidationError(parsed.error);
+        return;
       }
 
       const dataset = await processParsedJsonToDataset(
@@ -187,22 +178,21 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
         rawJson,
         datasetName.trim() || 'dataset.json',
         (pct, msg) => {
-          setProgress(pct)
-          setProgressMessage(msg)
-        },
-      )
+          setProgress(pct);
+          setProgressMessage(msg);
+        }
+      );
 
-      onDatasetCreated(dataset)
+      onDatasetCreated(dataset);
     } catch (err: any) {
       setValidationError({
         message: `Processing failed: ${err?.message || 'Unable to process JSON structure.'}`,
-        suggestion:
-          'Ensure the JSON is an array of objects or a standard structured object.',
-      })
+        suggestion: 'Ensure the JSON is an array of objects or a standard structured object.',
+      });
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col space-y-4 flex-1 min-h-0 w-full">
@@ -212,13 +202,12 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
           <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Import & Ingest JSON</span>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80">
-              <Sparkles className="w-3 h-3 text-emerald-500" /> Auto Type
-              Detection
+              <Sparkles className="w-3 h-3 text-emerald-500" /> Auto Type Detection
             </span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            100% Client-side. Automatically detects numbers, decimals, dates,
-            datetimes, and timestamps.
+            100% Client-side. Automatically detects numbers, decimals, dates, datetimes, and
+            timestamps.
           </p>
         </div>
 
@@ -264,10 +253,10 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
               accept=".json,.jsonl,.txt"
               onChange={(e) => {
                 if (e.target.files && e.target.files.length > 0) {
-                  handleFileUpload(e.target.files[0])
+                  handleFileUpload(e.target.files[0]);
                 }
                 // Allow choosing the same file again after it has been cleared.
-                e.currentTarget.value = ''
+                e.currentTarget.value = '';
               }}
               className="hidden"
             />
@@ -284,8 +273,8 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
         {/* Drag & Drop Zone / Editor */}
         <div
           onDragOver={(e) => {
-            e.preventDefault()
-            setIsDragging(true)
+            e.preventDefault();
+            setIsDragging(true);
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
@@ -311,9 +300,8 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
                   {uploadedFile.name}
                 </div>
                 <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">
-                  {(uploadedFile.size / 1024 / 1024).toFixed(1)} MB — kept out
-                  of the editor to prevent browser memory spikes. Select Process
-                  JSON to read and analyze it locally.
+                  {(uploadedFile.size / 1024 / 1024).toFixed(1)} MB — kept out of the editor to
+                  prevent browser memory spikes. Select Process JSON to read and analyze it locally.
                 </p>
               </div>
             )}
@@ -321,11 +309,7 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
               rows={22}
               value={jsonText}
               onChange={(e) => handleTextChange(e.target.value)}
-              placeholder={
-                uploadedFile
-                  ? 'This large file is ready to process.'
-                  : JSON_EXAMPLE
-              }
+              placeholder={uploadedFile ? 'This large file is ready to process.' : JSON_EXAMPLE}
               className="w-full flex-1 h-full min-h-0 p-3 sm:p-4 font-mono text-xs sm:text-sm bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none resize-none leading-relaxed selection:bg-emerald-500/20 overflow-y-auto"
               disabled={uploadedFile !== null}
               spellCheck={false}
@@ -338,12 +322,8 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
           <div className="shrink-0 p-4 bg-rose-50 dark:bg-rose-950/40 border-t border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-900 dark:text-rose-200 animate-in fade-in">
             <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
             <div className="flex-1 text-xs sm:text-sm">
-              <p className="font-bold text-rose-800 dark:text-rose-300">
-                Invalid JSON
-              </p>
-              <p className="mt-1 whitespace-pre-wrap font-mono">
-                {validationError.message}
-              </p>
+              <p className="font-bold text-rose-800 dark:text-rose-300">Invalid JSON</p>
+              <p className="mt-1 whitespace-pre-wrap font-mono">{validationError.message}</p>
               {validationError.snippet && (
                 <div className="mt-2 p-2.5 rounded-xl bg-rose-100 dark:bg-rose-900/60 font-mono text-xs text-rose-950 dark:text-rose-100 border border-rose-200 dark:border-rose-800">
                   {validationError.snippet}
@@ -438,5 +418,5 @@ export const JsonInputView: React.FC<JsonInputViewProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

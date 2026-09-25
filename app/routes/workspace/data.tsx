@@ -5,8 +5,11 @@ import { DataTableView } from '../../components/dataset/DataTableView';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Data Table View — JSON Visualiser" },
-    { name: "description", content: "Explore and filter tabular JSON data with spreadsheet features." },
+    { title: 'Data Table View — JSON Visualiser' },
+    {
+      name: 'description',
+      content: 'Explore and filter tabular JSON data with spreadsheet features.',
+    },
   ];
 }
 

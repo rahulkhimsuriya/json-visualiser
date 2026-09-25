@@ -10,7 +10,7 @@ import {
   Trash2,
   Plus,
   FileSpreadsheet,
-  Database
+  Database,
 } from 'lucide-react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { ExportModal } from '../components/export/ExportModal';
@@ -25,7 +25,7 @@ export default function WorkspaceLayout() {
     deleteDataset,
     activeDatasetId,
     loadPresetDataset,
-    isInitialized
+    isInitialized,
   } = useWorkspace();
 
   const navigate = useNavigate();
@@ -171,7 +171,12 @@ export default function WorkspaceLayout() {
 
       {/* Routed Tab Content */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
-        <Outlet context={{ onSetQueryResult: setActiveQueryResult, onOpenExport: () => setIsExportOpen(true) }} />
+        <Outlet
+          context={{
+            onSetQueryResult: setActiveQueryResult,
+            onOpenExport: () => setIsExportOpen(true),
+          }}
+        />
       </div>
 
       {/* Export Modal */}
