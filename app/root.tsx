@@ -6,14 +6,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { WorkspaceProvider } from "./context/WorkspaceContext";
+import { WorkspaceProvider, useWorkspace } from "./context/WorkspaceContext";
 import { Header } from "./components/layout/Header";
 import { CommandPalette } from "./components/layout/CommandPalette";
 import { PrivacyModal } from "./components/layout/PrivacyModal";
+import { AppLoader } from "./components/common/AppLoader";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,6 +38,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <noscript>
+          <style>{`#app-loader { display: none !important; }`}</style>
+        </noscript>
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -65,6 +70,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function MainShell() {
+  const { isInitialized } = useWorkspace();
+  const navigation = useNavigation();
+  const isNavigating = navigation.state === 'loading' || navigation.state === 'submitting';
+
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
@@ -81,6 +90,14 @@ function MainShell() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Route transition loading bar */}
+      {isNavigating && (
+        <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 animate-pulse shadow-xs shadow-emerald-500/50" />
+      )}
+
+      {/* App boot & workspace initialization loader */}
+      <AppLoader isReady={isInitialized} />
+
       <Header />
       <main className="flex-1 flex flex-col min-h-0">
         <Outlet />
